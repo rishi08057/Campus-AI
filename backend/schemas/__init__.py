@@ -1,0 +1,1 @@
+"""Schema package for CampusAI backend request and response models."""

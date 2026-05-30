@@ -1,9 +1,11 @@
 from fastapi import APIRouter
 
+from ..schemas.system import MessageResponse
+
 
 router = APIRouter(tags=["root"])
 
 
-@router.get("/")
-def read_root() -> dict[str, str]:
-    return {"message": "CampusAI Backend Running"}
+@router.get("/", response_model=MessageResponse)
+def read_root() -> MessageResponse:
+    return MessageResponse(message="CampusAI Backend Running")

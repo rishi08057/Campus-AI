@@ -3,9 +3,9 @@ import { ChatBox } from "@/components/chat/ChatBox";
 
 export default function ChatPage() {
   return (
-    <Container className="flex min-h-[calc(100vh-4rem)] items-center py-12 sm:py-16">
-      <div className="mx-auto w-full max-w-3xl space-y-8">
-        <header className="text-center space-y-3">
+    <Container className="py-10 sm:py-14 lg:py-16">
+      <div className="mx-auto w-full max-w-4xl space-y-8">
+        <header className="space-y-3 text-center">
           <span className="inline-flex rounded-full border border-sky-200 bg-sky-50 px-4 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
             CampusAI Chat Assistant
           </span>
@@ -17,7 +17,7 @@ export default function ChatPage() {
           </p>
         </header>
 
-        <section className="rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:p-6 lg:p-8">
+        <section className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/90 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur">
           <ChatBox className="w-full" />
         </section>
       </div>

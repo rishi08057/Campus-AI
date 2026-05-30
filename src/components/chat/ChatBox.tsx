@@ -1,36 +1,58 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { apiClient } from "@/lib/api";
+import { ChatHistory, type Message } from "@/components/chat/ChatHistory";
+import { InputArea } from "@/components/chat/InputArea";
 
 export type ChatBoxProps = {
   className?: string;
   placeholder?: string;
 };
 
+function readAssistantResponse(data: unknown): string {
+  if (data && typeof data === "object" && "response" in data) {
+    return String((data as { response: unknown }).response);
+  }
+
+  if (typeof data === "string") {
+    return data;
+  }
+
+  return JSON.stringify(data);
+}
+
 export function ChatBox({ className = "", placeholder = "Write a message..." }: ChatBoxProps) {
   const [input, setInput] = useState<string>("");
-  const [response, setResponse] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const endRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, loading]);
 
   async function handleSend() {
-    if (!input.trim()) return;
-    setLoading(true);
-    setError(null);
-    setResponse(null);
-    try {
-      const res = await apiClient.post("/chat", { message: input });
+    const trimmedInput = input.trim();
 
-      // The backend returns a typed JSON payload with a `response` field.
-      const data = res.data;
-      if (data && typeof data === "object" && "response" in data) {
-        setResponse(String((data as { response: unknown }).response));
-      } else if (typeof data === "string") {
-        setResponse(data as string);
-      } else {
-        setResponse(JSON.stringify(data));
-      }
+    if (!trimmedInput || loading) {
+      return;
+    }
+
+    setError(null);
+    setLoading(true);
+    setMessages((currentMessages) => [...currentMessages, { role: "user", content: trimmedInput }]);
+    setInput("");
+
+    try {
+      const res = await apiClient.post("/chat", { message: trimmedInput });
+      const assistantMessage = readAssistantResponse(res.data);
+
+      setMessages((currentMessages) => [
+        ...currentMessages,
+        { role: "assistant", content: assistantMessage },
+      ]);
     } catch (err: any) {
       setError(err?.message ?? "Failed to send message");
     } finally {
@@ -38,67 +60,53 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
     }
   }
 
+  function handleClear() {
+    setMessages([]);
+    setInput("");
+    setError(null);
+    setLoading(false);
+  }
+
   return (
-    <div className={`w-full ${className}`.trim()}>
-      <div className="flex w-full flex-col gap-4">
-        <label htmlFor="chat-input" className="sr-only">
-          Chat message
-        </label>
-        <textarea
-          id="chat-input"
+    <div className={`flex w-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white/95 shadow-[0_24px_80px_rgba(15,23,42,0.08)] ${className}`.trim()}>
+      <div className="border-b border-slate-200/80 bg-gradient-to-r from-slate-50 to-white px-4 py-4 sm:px-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+              Conversation
+            </p>
+            <h2 className="mt-1 text-lg font-semibold text-slate-950 sm:text-xl">
+              CampusAI Chat Assistant
+            </h2>
+          </div>
+
+          <div className="rounded-full bg-slate-950 px-3 py-1 text-xs font-semibold text-white">
+            {loading ? "Typing" : "Ready"}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex h-[60vh] min-h-[420px] flex-col bg-[linear-gradient(180deg,rgba(248,250,252,0.9)_0%,rgba(255,255,255,1)_100%)]">
+        <div className="flex-1 overflow-hidden px-3 py-4 sm:px-5 sm:py-6">
+          <ChatHistory messages={messages} isTyping={loading} />
+          <div ref={endRef} />
+        </div>
+
+        {error ? (
+          <div className="mx-4 mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700 sm:mx-5">
+            <div className="font-semibold">Error</div>
+            <div>{error}</div>
+          </div>
+        ) : null}
+
+        <InputArea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={setInput}
+          onSend={handleSend}
+          onClear={handleClear}
+          loading={loading}
           placeholder={placeholder}
-          rows={4}
-          className="min-h-[96px] w-full resize-y rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
         />
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleSend}
-              disabled={loading || !input.trim()}
-              className={`inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold text-white ${
-                loading || !input.trim()
-                  ? "bg-slate-300 cursor-not-allowed"
-                  : "bg-slate-900 hover:bg-slate-800"
-              }`}
-            >
-              {loading ? "Sending..." : "Send"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setInput("")}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              Clear
-            </button>
-          </div>
-
-          <div className="text-sm text-slate-500">
-            {input.length}/1000
-          </div>
-        </div>
-
-        <div>
-          {error ? (
-            <div className="rounded-md border border-red-100 bg-red-50 p-3 text-sm text-red-700">
-              <div className="font-semibold">Error</div>
-              <div>{error}</div>
-            </div>
-          ) : null}
-
-          {response ? (
-            <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-800">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-                Response
-              </div>
-              <div className="whitespace-pre-wrap">{response}</div>
-            </div>
-          ) : null}
-        </div>
       </div>
     </div>
   );

@@ -22,10 +22,10 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
     try {
       const res = await apiClient.post("/chat", { message: input });
 
-      // backend may return { reply } or plain string — handle both
+      // The backend returns a typed JSON payload with a `response` field.
       const data = res.data;
-      if (data && typeof data === "object" && "reply" in data) {
-        setResponse(String((data as any).reply));
+      if (data && typeof data === "object" && "response" in data) {
+        setResponse(String((data as { response: unknown }).response));
       } else if (typeof data === "string") {
         setResponse(data as string);
       } else {

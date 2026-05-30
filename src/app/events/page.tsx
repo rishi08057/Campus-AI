@@ -68,9 +68,9 @@ export default function EventsPage() {
               key={ev.id}
               title={ev.title}
               description={ev.description}
-              venue={ev.location ?? 'TBA'}
-              category={ev.organizer ?? ev.status}
-              datetime={ev.startAt}
+              venue={ev.venue}
+              category={ev.category}
+              datetime={ev.datetime}
               registerHref={`/events/${ev.id}/register`}
             />
           ))}

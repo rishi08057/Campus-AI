@@ -1,0 +1,13 @@
+import axios from "axios";
+
+const FALLBACK_API_BASE_URL = "http://localhost:3001/api";
+
+export const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || FALLBACK_API_BASE_URL;
+
+export const apiClient = axios.create({
+  baseURL: apiBaseUrl,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  timeout: 15000,
+});

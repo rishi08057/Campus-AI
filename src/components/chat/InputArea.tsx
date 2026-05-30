@@ -17,6 +17,17 @@ export function InputArea({
 }: InputAreaProps) {
   const isDisabled = loading || !value.trim();
 
+  function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    // Enter sends the message; Shift+Enter keeps the textarea multiline.
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+
+      if (!isDisabled) {
+        onSend();
+      }
+    }
+  }
+
   return (
     <div className="space-y-4 border-t border-slate-200/80 bg-white/95 p-4 sm:p-5">
       <label htmlFor="chat-input" className="sr-only">
@@ -27,6 +38,7 @@ export function InputArea({
         id="chat-input"
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         rows={4}
         className="min-h-[108px] w-full resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm outline-none transition focus:border-slate-300 focus:ring-2 focus:ring-slate-950/10"

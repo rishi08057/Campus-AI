@@ -1,9 +1,7 @@
 import { MessageBubble } from "@/components/chat/MessageBubble";
+import type { ChatMessage } from "@/types/chat";
 
-export type Message = {
-  role: "user" | "assistant";
-  content: string;
-};
+export type Message = ChatMessage;
 
 export type ChatHistoryProps = {
   messages: Message[];
@@ -19,9 +17,10 @@ export function ChatHistory({ messages }: ChatHistoryProps) {
       ) : (
         messages.map((message, index) => (
           <MessageBubble
-            key={`${message.role}-${index}-${message.content.slice(0, 20)}`}
+            key={`${message.role}-${message.timestamp || index}`}
             role={message.role}
             content={message.content}
+            timestamp={message.timestamp}
           />
         ))
       )}

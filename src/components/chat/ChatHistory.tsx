@@ -7,10 +7,9 @@ export type Message = {
 
 export type ChatHistoryProps = {
   messages: Message[];
-  isTyping?: boolean;
 };
 
-export function ChatHistory({ messages, isTyping = false }: ChatHistoryProps) {
+export function ChatHistory({ messages }: ChatHistoryProps) {
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto px-1 py-1 sm:gap-5 sm:px-2">
       {messages.length === 0 ? (
@@ -26,14 +25,6 @@ export function ChatHistory({ messages, isTyping = false }: ChatHistoryProps) {
           />
         ))
       )}
-
-      {isTyping ? (
-        <div className="flex w-full justify-start">
-          <div className="max-w-[85%] rounded-3xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-500 shadow-sm sm:max-w-[75%] sm:px-5 sm:py-4">
-            CampusAI is typing...
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

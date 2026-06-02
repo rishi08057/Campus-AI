@@ -37,19 +37,19 @@ export function MessageBubble({ role, content, timestamp }: MessageBubbleProps) 
   const timeString = formatMessageTime(timestamp);
 
   return (
-    <div className={`flex w-full flex-col ${isUser ? "items-end" : "items-start"}`}>
+    <div className={`flex w-full flex-col gap-1.5 animate-fadeInUp ${isUser ? "items-end" : "items-start"}`}>
       <div
-        className={`flex max-w-[85%] flex-col gap-1.5 rounded-3xl px-4 py-3 text-sm leading-6 shadow-sm sm:max-w-[75%] sm:px-5 sm:py-4 ${
+        className={`flex max-w-full flex-col gap-2 rounded-2xl px-4 py-3 text-sm leading-6 shadow-md transition-all duration-200 hover:shadow-lg sm:max-w-[85%] sm:px-5 sm:py-4 md:max-w-[70%] lg:max-w-[60%] ${
           isUser
-            ? "rounded-br-md bg-slate-950 text-white"
-            : "rounded-bl-md border border-slate-200 bg-white text-slate-800"
+            ? "rounded-br-none bg-gradient-to-r from-slate-900 to-slate-950 text-white"
+            : "rounded-bl-none border border-slate-200/60 bg-white shadow-sm"
         }`}
       >
-        <div className="whitespace-pre-wrap break-words">{content}</div>
+        <div className="whitespace-pre-wrap break-words text-slate-900">{content}</div>
         {timeString ? (
           <div
-            className={`text-xs font-medium ${
-              isUser ? "text-slate-400" : "text-slate-500"
+            className={`text-xs font-medium tracking-wide ${
+              isUser ? "text-slate-300" : "text-slate-500"
             }`}
           >
             {timeString}

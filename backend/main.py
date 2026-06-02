@@ -1,6 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# Load environment variables from a local .env file when present. This is
+# optional and only used for local development convenience. Production
+# deployments should provide real environment variables via the platform.
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # loads .env from project root if present
+except Exception:
+    # If python-dotenv isn't installed, skip loading .env — requirements.txt
+    # includes python-dotenv so this should be available in dev environments.
+    pass
+
 from .config import get_cors_origins
 from .routes.chat import router as chat_router
 from .routes.events import router as events_router

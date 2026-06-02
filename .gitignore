@@ -9,3 +9,13 @@ coverage
 .env.test.local
 .env.production.local
 *.log
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python env files
+backend/.env

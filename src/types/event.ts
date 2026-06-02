@@ -1,12 +1,8 @@
-export type EventStatus = "draft" | "published" | "cancelled";
-
 export interface Event {
-  id: string;
+  id: number;
   title: string;
   description: string;
-  startAt: string;
-  endAt?: string;
-  location?: string;
-  organizer?: string;
-  status: EventStatus;
+  venue: string;
+  category: string;
+  datetime: string;
 }

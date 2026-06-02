@@ -1,30 +1,68 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { apiClient } from "@/lib/api";
-import { ChatHistory, type Message } from "@/components/chat/ChatHistory";
+import { ChatHistory } from "@/components/chat/ChatHistory";
 import { InputArea } from "@/components/chat/InputArea";
+import { TypingIndicator } from "@/components/chat/TypingIndicator";
+import type {
+  ChatErrorResponse,
+  ChatMessage,
+  ChatRequest,
+  ChatSuccessResponse,
+  NormalizedChatReply,
+} from "@/types/chat";
 
 export type ChatBoxProps = {
   className?: string;
   placeholder?: string;
 };
 
-function readAssistantResponse(data: unknown): string {
-  if (data && typeof data === "object" && "response" in data) {
-    return String((data as { response: unknown }).response);
-  }
-
+function normalizeAssistantResponse(data: ChatSuccessResponse | string | null): NormalizedChatReply {
   if (typeof data === "string") {
-    return data;
+    return { text: data, raw: data };
   }
 
-  return JSON.stringify(data);
+  if (!data) {
+    return { text: "", raw: null };
+  }
+
+  const text =
+    typeof data.reply === "string"
+      ? data.reply
+      : typeof data.response === "string"
+        ? data.response
+        : typeof data.message === "string"
+          ? data.message
+          : typeof data.content === "string"
+            ? data.content
+            : JSON.stringify(data);
+
+  return { text, raw: data };
+}
+
+function readErrorMessage(error: unknown): string {
+  if (axios.isAxiosError<ChatErrorResponse>(error)) {
+    return (
+      error.response?.data?.detail ??
+      error.response?.data?.error ??
+      error.response?.data?.message ??
+      error.message ??
+      "Failed to send message"
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Failed to send message";
 }
 
 export function ChatBox({ className = "", placeholder = "Write a message..." }: ChatBoxProps) {
   const [input, setInput] = useState<string>("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -42,19 +80,24 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
 
     setError(null);
     setLoading(true);
-    setMessages((currentMessages) => [...currentMessages, { role: "user", content: trimmedInput }]);
+    const userMessage: ChatMessage = { role: "user", content: trimmedInput };
+    setMessages((currentMessages) => [...currentMessages, userMessage]);
     setInput("");
 
     try {
-      const res = await apiClient.post("/chat", { message: trimmedInput });
-      const assistantMessage = readAssistantResponse(res.data);
+      const payload: ChatRequest = {
+        message: trimmedInput,
+        history: [...messages, userMessage],
+      };
+      const res = await apiClient.post<ChatSuccessResponse | string>("/chat", payload);
+      const normalizedReply = normalizeAssistantResponse(res.data);
 
       setMessages((currentMessages) => [
         ...currentMessages,
-        { role: "assistant", content: assistantMessage },
+        { role: "assistant", content: normalizedReply.text },
       ]);
     } catch (err: any) {
-      setError(err?.message ?? "Failed to send message");
+      setError(readErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -88,7 +131,10 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
 
       <div className="flex h-[60vh] min-h-[420px] flex-col bg-[linear-gradient(180deg,rgba(248,250,252,0.9)_0%,rgba(255,255,255,1)_100%)]">
         <div className="flex-1 overflow-hidden px-3 py-4 sm:px-5 sm:py-6">
-          <ChatHistory messages={messages} isTyping={loading} />
+          <div className="flex h-full flex-col gap-4 overflow-y-auto px-1 py-1 sm:gap-5 sm:px-2">
+            <ChatHistory messages={messages} />
+            {loading ? <TypingIndicator /> : null}
+          </div>
           <div ref={endRef} />
         </div>
 

@@ -67,6 +67,7 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState<boolean>(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -74,6 +75,9 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
   useEffect(() => {
     const session = loadChatSession();
     setMessages(session.messages);
+    // Try to retrieve session_id if stored in session object (need to update chatStorage too, but for now we'll handle it here)
+    const storedSession = typeof window !== 'undefined' ? localStorage.getItem('campusai_session_id') : null;
+    if (storedSession) setSessionId(storedSession);
     setMounted(true);
   }, []);
 
@@ -110,10 +114,17 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
       const payload: ChatRequest = {
         message: trimmedInput,
         history: updatedMessages,
+        session_id: sessionId || undefined,
       };
       const res = await apiClient.post<ChatSuccessResponse | string>("/chat", payload);
       const normalizedReply = normalizeAssistantResponse(res.data);
       const assistantTimestamp = Date.now();
+
+      // Update session ID if returned
+      if (typeof res.data !== 'string' && res.data?.session_id) {
+        setSessionId(res.data.session_id);
+        localStorage.setItem('campusai_session_id', res.data.session_id);
+      }
 
       setMessages((currentMessages) => [
         ...currentMessages,
@@ -135,6 +146,8 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
       setInput("");
       setError(null);
       setLoading(false);
+      setSessionId(null);
+      localStorage.removeItem('campusai_session_id');
       clearChatSession();
     }
   }

@@ -1,9 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 import logging
+from sqlalchemy.orm import Session
 
 from ..schemas.chat import ChatRequest, ChatResponse
 from ..services.ai_service import generate_ai_response
 from ..data.mock_events import MOCK_EVENTS
+from ..database import get_db
+from ..models import ChatSession, ChatMessage as DBChatMessage
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -39,7 +42,7 @@ def generate_chat_response(message: str) -> str:
 
 
 @router.post("", response_model=ChatResponse)
-async def create_chat_reply(payload: ChatRequest) -> ChatResponse:
+async def create_chat_reply(payload: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse:
     """
     Route that forwards user messages to Gemini and returns the assistant reply.
 
@@ -49,14 +52,45 @@ async def create_chat_reply(payload: ChatRequest) -> ChatResponse:
     message = payload.message.strip()
 
     if not message:
-        return ChatResponse(response=generate_chat_response(message))
+        return ChatResponse(
+            response=generate_chat_response(message),
+            session_id=payload.session_id or "default"
+        )
 
-    # Slice history to last 10 messages to keep context window manageable
-    history_data = []
-    if payload.history:
-        history_data = [
-            {"role": m.role, "content": m.content} for m in payload.history[-10:]
-        ]
+    # 1. Handle Session
+    session_id = payload.session_id
+    if session_id:
+        session = db.query(ChatSession).filter(ChatSession.id == session_id).first()
+        if not session:
+            session = ChatSession(id=session_id)
+            db.add(session)
+            db.commit()
+    else:
+        session = ChatSession()
+        db.add(session)
+        db.commit()
+        db.refresh(session)
+        session_id = session.id
+
+    # 2. Save User Message
+    user_msg = DBChatMessage(session_id=session_id, role="user", content=message)
+    db.add(user_msg)
+    db.commit()
+
+    # 3. Load history from DB (last 10 messages)
+    db_history = (
+        db.query(DBChatMessage)
+        .filter(DBChatMessage.session_id == session_id)
+        .order_by(DBChatMessage.created_at.desc())
+        .offset(1)  # Skip the current user message for history
+        .limit(10)
+        .all()
+    )
+    
+    # Reverse to get chronological order
+    history_data = [
+        {"role": m.role, "content": m.content} for m in reversed(db_history)
+    ]
 
     try:
         event_context = "\n".join(
@@ -100,10 +134,21 @@ Rules:
         if not ai_reply:
             raise RuntimeError("AI provider returned an empty response")
 
-        return ChatResponse(response=ai_reply)
+        # 4. Save AI Response
+        assistant_msg = DBChatMessage(session_id=session_id, role="assistant", content=ai_reply)
+        db.add(assistant_msg)
+        db.commit()
+
+        return ChatResponse(response=ai_reply, session_id=session_id)
 
     except Exception as exc:
         logging.exception("AI service error: %s", exc)
 
         fallback = generate_chat_response(message)
-        return ChatResponse(response=fallback)
+        
+        # Save fallback as well to maintain history
+        assistant_msg = DBChatMessage(session_id=session_id, role="assistant", content=fallback)
+        db.add(assistant_msg)
+        db.commit()
+        
+        return ChatResponse(response=fallback, session_id=session_id)

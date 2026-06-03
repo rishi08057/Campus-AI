@@ -19,9 +19,17 @@ from .routes.health import router as health_router
 from .routes.root import router as root_router
 from .database import engine, Base
 from . import models
+from .services.vector_service import vector_service
+from .data.mock_events import MOCK_EVENTS
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+
+# Index events for RAG
+try:
+    vector_service.upsert_events(MOCK_EVENTS)
+except Exception as e:
+    print(f"Warning: Could not index events: {e}")
 
 
 def create_app() -> FastAPI:

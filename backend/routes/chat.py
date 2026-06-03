@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 
 from ..schemas.chat import ChatRequest, ChatResponse
 from ..services.ai_service import generate_ai_response
-from ..data.mock_events import MOCK_EVENTS
 from ..database import get_db
 from ..models import ChatSession, ChatMessage as DBChatMessage
+from ..services.vector_service import vector_service
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -92,35 +92,34 @@ async def create_chat_reply(payload: ChatRequest, db: Session = Depends(get_db))
         {"role": m.role, "content": m.content} for m in reversed(db_history)
     ]
 
+    # 4. Semantic Search for Context (RAG)
     try:
-        event_context = "\n".join(
-            [
-                f"- {event.title} ({event.category})\n"
-                f"  Venue: {event.venue}\n"
-                f"  Date: {event.datetime.strftime('%Y-%m-%d %H:%M')}\n"
-                f"  Description: {event.description}"
-                for event in MOCK_EVENTS
-            ]
-        )
+        relevant_events = vector_service.search_events(message, n_results=3)
+        
+        event_context = ""
+        if relevant_events:
+            event_context = "Relevant Events Found:\n" + "\n".join(
+                [f"- {e['content']} (Date: {e['metadata']['datetime']})" for e in relevant_events]
+            )
+        else:
+            event_context = "No specific events match the query perfectly, but you can still help based on general knowledge or state that no suitable event exists."
 
         system_prompt = f"""
 You are CampusAI Event Agent.
 
-Available Events:
+Context from Event Database:
 {event_context}
 
 Responsibilities:
-- Recommend events from the available events list.
+- Recommend events from the provided context.
 - Explain workshops, hackathons, competitions, and campus activities.
 - Help students discover opportunities.
 - Explain why an event is relevant to a student's interests.
 - Answer questions about participation and benefits.
 
 Rules:
-- ONLY use events from the Available Events section.
-- Never invent events.
-- Never invent dates, venues, registration links, or organizers.
-- If no suitable event exists, clearly state that.
+- ONLY use events provided in the Context section above.
+- If no suitable event exists in the context, clearly state that.
 - Mention event title, venue, date, and purpose when recommending an event.
 - Be concise, professional, and student-friendly.
 """
@@ -134,7 +133,7 @@ Rules:
         if not ai_reply:
             raise RuntimeError("AI provider returned an empty response")
 
-        # 4. Save AI Response
+        # 5. Save AI Response
         assistant_msg = DBChatMessage(session_id=session_id, role="assistant", content=ai_reply)
         db.add(assistant_msg)
         db.commit()

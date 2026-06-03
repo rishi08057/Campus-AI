@@ -1,9 +1,10 @@
 import os
 import asyncio
 import logging
-from typing import Optional
+from typing import Optional, List, Any
 
 from google import genai
+from google.genai import types
 
 logger = logging.getLogger("backend.ai_service")
 
@@ -13,10 +14,14 @@ def _get_api_key() -> Optional[str]:
 
 
 def _get_model_name() -> str:
-    return os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    return os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
 
-def _call_gemini(message: str, system_prompt: Optional[str] = None) -> str:
+def _call_gemini(
+    message: str,
+    history: Optional[List[dict]] = None,
+    system_prompt: Optional[str] = None,
+) -> str:
     api_key = _get_api_key()
 
     if not api_key:
@@ -24,16 +29,28 @@ def _call_gemini(message: str, system_prompt: Optional[str] = None) -> str:
 
     client = genai.Client(api_key=api_key)
 
-    prompt = message
+    # Convert history to Gemini format (role mapping)
+    contents = []
+    if history:
+        for entry in history:
+            role = "user" if entry["role"] == "user" else "model"
+            contents.append(types.Content(role=role, parts=[types.Part(text=entry["content"])]))
 
+    # Add the current message
+    contents.append(types.Content(role="user", parts=[types.Part(text=message)]))
+
+    config = None
     if system_prompt:
-        prompt = f"{system_prompt}\n\nUser: {message}"
+        config = types.GenerateContentConfig(
+            system_instruction=system_prompt,
+        )
 
-    print("Sending request to Gemini...")
+    print(f"Sending request to Gemini ({len(contents)} messages)...")
 
     response = client.models.generate_content(
         model=_get_model_name(),
-        contents=prompt,
+        contents=contents,
+        config=config,
     )
 
     print("Received response from Gemini")
@@ -43,10 +60,12 @@ def _call_gemini(message: str, system_prompt: Optional[str] = None) -> str:
 
 async def generate_ai_response(
     message: str,
+    history: Optional[List[dict]] = None,
     system_prompt: Optional[str] = None,
 ) -> str:
     return await asyncio.to_thread(
         _call_gemini,
         message,
+        history,
         system_prompt,
     )

@@ -51,6 +51,13 @@ async def create_chat_reply(payload: ChatRequest) -> ChatResponse:
     if not message:
         return ChatResponse(response=generate_chat_response(message))
 
+    # Slice history to last 10 messages to keep context window manageable
+    history_data = []
+    if payload.history:
+        history_data = [
+            {"role": m.role, "content": m.content} for m in payload.history[-10:]
+        ]
+
     try:
         event_context = "\n".join(
             [
@@ -85,8 +92,9 @@ Rules:
 """
 
         ai_reply = await generate_ai_response(
-            message,
-            system_prompt,
+            message=message,
+            history=history_data,
+            system_prompt=system_prompt,
         )
 
         if not ai_reply:

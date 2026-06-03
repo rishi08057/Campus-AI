@@ -17,6 +17,11 @@ from .routes.chat import router as chat_router
 from .routes.events import router as events_router
 from .routes.health import router as health_router
 from .routes.root import router as root_router
+from .database import engine, Base
+from . import models
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
 
 def create_app() -> FastAPI:

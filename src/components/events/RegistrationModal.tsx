@@ -7,6 +7,7 @@ import { EventRegistrationResponse } from "@/types/event";
 interface RegistrationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   eventId: number;
   eventTitle: string;
 }
@@ -14,6 +15,7 @@ interface RegistrationModalProps {
 export function RegistrationModal({
   isOpen,
   onClose,
+  onSuccess,
   eventId,
   eventTitle,
 }: RegistrationModalProps) {
@@ -25,11 +27,11 @@ export function RegistrationModal({
   const handleRegister = async () => {
     setStatus("loading");
     try {
-      // Hardcoded userId: 1 as per requirements
-      const response = await registerForEvent({ userId: 1, eventId });
+      const response = await registerForEvent({ userId: 0, eventId });
       if (response.success) {
         setStatus("success");
         setMessage(response.message);
+        if (onSuccess) onSuccess();
       } else {
         setStatus("error");
         setMessage(response.message);

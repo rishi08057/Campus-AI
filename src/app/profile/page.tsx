@@ -20,8 +20,8 @@ export default function ProfilePage() {
         setLoading(true);
         const [profileData, registeredData, savedData] = await Promise.all([
           getUserProfile(),
-          getRegisteredEvents(1),
-          getSavedEvents(1),
+          getRegisteredEvents(),
+          getSavedEvents(),
         ]);
         
         setProfile(profileData);

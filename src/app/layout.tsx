@@ -18,19 +18,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const navLinks = [
-    { label: "Events", href: "/events" },
-    { label: "For You", href: "/recommendations" },
-    { label: "My Events", href: "/my-events" },
-    { label: "Chat", href: "/chat" },
-    { label: "Profile", href: "/profile" },
-  ];
-
   return (
     <html lang="en">
       <body className={`${manrope.variable} antialiased`}>
         <div className="min-h-screen">
-          <Navbar links={navLinks} />
+          <Navbar />
           <main>{children}</main>
         </div>
       </body>

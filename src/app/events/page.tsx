@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { Container } from "@/components/ui/Container";
-import { apiClient } from "@/lib/api";
+import { apiClient, getRegisteredEvents, getSavedEvents } from "@/lib/api";
 import { Event as EventType } from "@/types/event";
 import { SearchBar } from "@/components/events/SearchBar";
 import { EventFilters } from "@/components/events/EventFilters";
@@ -16,13 +16,31 @@ export default function EventsPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState<string>("");
   const [activeFilter, setActiveFilter] = useState<EventsFilter>("all");
+  const [savedEventIds, setSavedEventIds] = useState<number[]>([]);
+  const [registeredEventIds, setRegisteredEventIds] = useState<number[]>([]);
 
   async function fetchEvents() {
     setLoading(true);
     setError(null);
     try {
-      const res = await apiClient.get<EventType[]>("/events");
-      setEvents(res.data || []);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      
+      const promises: any[] = [
+        apiClient.get<EventType[]>("/events")
+      ];
+      
+      if (token) {
+        promises.push(getSavedEvents());
+        promises.push(getRegisteredEvents());
+      }
+      
+      const [eventsRes, savedRes, registeredRes] = await Promise.all(promises);
+      
+      setEvents(eventsRes.data || []);
+      if (token && savedRes && registeredRes) {
+        setSavedEventIds(savedRes.map((e: any) => e.id));
+        setRegisteredEventIds(registeredRes.map((e: any) => e.id));
+      }
     } catch (err: any) {
       setError(err?.message ?? "Failed to load events");
     } finally {
@@ -118,6 +136,8 @@ export default function EventsPage() {
         error={error}
         onRetry={fetchEvents}
         isSearching={search.length > 0}
+        savedEventIds={savedEventIds}
+        registeredEventIds={registeredEventIds}
       />
     </Container>
   );

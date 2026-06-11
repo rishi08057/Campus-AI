@@ -3,12 +3,15 @@ node_modules
 out
 dist
 coverage
+
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
 *.log
+
 # Python
 .venv/
 venv/
@@ -19,3 +22,10 @@ __pycache__/
 
 # Python env files
 backend/.env
+
+# ChromaDB
+chroma_db/
+
+# Database files
+*.db
+*.sqlite3

@@ -19,6 +19,7 @@ from .routes.health import router as health_router
 from .routes.root import router as root_router
 from .routes.profile import router as profile_router
 from .routes.recommendations import router as recommendations_router
+from .routes.auth import router as auth_router
 from .database import engine, Base
 from . import models
 from .services.vector_service import vector_service
@@ -53,6 +54,7 @@ def create_app() -> FastAPI:
     app.include_router(chat_router)
     app.include_router(profile_router)
     app.include_router(recommendations_router)
+    app.include_router(auth_router)
 
     return app
 

@@ -20,8 +20,8 @@ export default function MyEventsPage() {
       try {
         setLoading(true);
         const [registeredData, savedData] = await Promise.all([
-          getRegisteredEvents(1),
-          getSavedEvents(1),
+          getRegisteredEvents(),
+          getSavedEvents(),
         ]);
         setRegisteredEvents(registeredData);
         setSavedEvents(savedData);

@@ -14,7 +14,7 @@ def get_profile(current_user: User = Depends(get_current_user)) -> UserProfile:
     # until we expand the User model with department, year, etc.
     return UserProfile(
         id=current_user.id,
-        name=current_user.full_name or "User",
+        name=current_user.name or "User",
         department="Computer Science",  # Default for now
         year="Junior (3rd Year)",       # Default for now
         interests=["Artificial Intelligence", "Web Development"] # Default for now

@@ -9,13 +9,13 @@ export interface UserProfile {
 export interface UserCreate {
   email: string;
   password: string;
-  full_name?: string;
+  name?: string;
 }
 
 export interface UserOut {
   id: number;
   email: string;
-  full_name?: string;
+  name?: string;
   created_at: string;
 }
 

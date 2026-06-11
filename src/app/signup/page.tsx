@@ -89,7 +89,7 @@ export default function SignupPage() {
       await signup({
         email: formData.email,
         password: formData.password,
-        full_name: formData.fullName,
+        name: formData.fullName,
       });
 
       setSuccess(true);

@@ -24,7 +24,7 @@ def signup(user_in: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         email=user_in.email,
         hashed_password=hashed_password,
-        full_name=user_in.full_name
+        name=user_in.name
     )
     
     db.add(new_user)

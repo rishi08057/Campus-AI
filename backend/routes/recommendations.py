@@ -18,7 +18,7 @@ def get_recommendations(current_user: User = Depends(get_current_user)) -> List[
     # Map current_user to UserProfile for the recommendation service
     user_profile = UserProfile(
         id=current_user.id,
-        name=current_user.full_name or "User",
+        name=current_user.name or "User",
         department="Computer Science",
         year="Junior (3rd Year)",
         interests=["Artificial Intelligence", "Web Development"]

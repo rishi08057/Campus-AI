@@ -5,7 +5,7 @@ from ..data.mock_events import MOCK_EVENTS
 from ..schemas.event import Event, EventRegistration, EventRegistrationResponse, EventSave, EventSaveResponse
 from ..dependencies import get_current_user
 from ..database import get_db
-from ..models import User, Registration, UserEventSave
+from ..models import User, Registration, SavedEvent
 
 router = APIRouter(prefix="/events", tags=["events"])
 
@@ -65,9 +65,9 @@ def save_event(
         raise HTTPException(status_code=404, detail="Event not found")
 
     # Check if already saved in DB
-    existing_save = db.query(UserEventSave).filter(
-        UserEventSave.user_id == current_user.id,
-        UserEventSave.event_id == save_req.eventId
+    existing_save = db.query(SavedEvent).filter(
+        SavedEvent.user_id == current_user.id,
+        SavedEvent.event_id == save_req.eventId
     ).first()
 
     if existing_save:
@@ -82,7 +82,7 @@ def save_event(
         )
 
     # Store saved event in DB
-    new_save = UserEventSave(
+    new_save = SavedEvent(
         user_id=current_user.id,
         event_id=save_req.eventId
     )
@@ -102,7 +102,7 @@ def get_saved_events(
     db: Session = Depends(get_db)
 ) -> list[Event]:
     # Get IDs of saved events from DB
-    saved_records = db.query(UserEventSave).filter(UserEventSave.user_id == current_user.id).all()
+    saved_records = db.query(SavedEvent).filter(SavedEvent.user_id == current_user.id).all()
     saved_ids = [s.event_id for s in saved_records]
     # Return full event objects from mock data
     return [e for e in MOCK_EVENTS if e.id in saved_ids]

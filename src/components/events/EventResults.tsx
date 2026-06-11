@@ -107,12 +107,12 @@ export function EventResults({
       {events.map((event) => (
         <div key={event.id} className="animate-fadeInUp">
           <EventCard
+            id={event.id}
             title={event.title}
             description={event.description}
             venue={event.venue}
             category={event.category}
             datetime={event.datetime}
-            registerHref={`/events/${event.id}/register`}
           />
         </div>
       ))}

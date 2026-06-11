@@ -21,7 +21,9 @@ export default function RootLayout({
   const navLinks = [
     { label: "Events", href: "/events" },
     { label: "For You", href: "/recommendations" },
+    { label: "My Events", href: "/my-events" },
     { label: "Chat", href: "/chat" },
+    { label: "Profile", href: "/profile" },
   ];
 
   return (

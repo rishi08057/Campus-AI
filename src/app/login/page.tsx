@@ -1,31 +1,43 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { login } from '@/lib/api';
-import { Container } from '@/components/ui/Container';
-import axios from 'axios';
 import Link from 'next/link';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+
+import { login } from '@/lib/api';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
 export default function LoginPage() {
   const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-    if (error) setError(null);
+
+    if (error) {
+      setError(null);
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
+
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
       return;
@@ -35,12 +47,19 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      await login(formData.email, formData.password);
+      await login(
+        formData.email,
+        formData.password
+      );
+
       router.push('/chat');
-      router.refresh(); // Ensure components re-render with new auth state if needed
+      router.refresh();
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.detail || 'Login failed. Please check your credentials.');
+        setError(
+          err.response?.data?.detail ||
+            'Login failed. Please check your credentials.'
+        );
       } else {
         setError('An unexpected error occurred');
       }
@@ -50,72 +69,68 @@ export default function LoginPage() {
   };
 
   return (
-    <Container className="py-12">
-      <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Welcome Back</h1>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-slate-100">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-950">
+            Welcome back
+          </h2>
+
+          <p className="mt-2 text-sm text-slate-600">
+            Don't have an account?{' '}
+            <Link
+              href="/signup"
+              className="font-semibold text-sky-600 hover:text-sky-500"
+            >
+              Sign up for free
+            </Link>
+          </p>
+        </div>
+
+        <form
+          className="mt-8 space-y-6"
+          onSubmit={handleSubmit}
+        >
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">
-              Email Address
-            </label>
-            <input
+
+          <div className="space-y-4">
+            <Input
+              label="Email address"
               type="email"
-              id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="you@example.com"
+              placeholder="alex@example.com"
               required
+              autoComplete="email"
             />
-          </div>
-          
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="block text-sm font-medium text-gray-700" htmlFor="password">
-                Password
-              </label>
-              <a href="#" className="text-xs text-blue-600 hover:underline">
-                Forgot password?
-              </a>
-            </div>
-            <input
+
+            <Input
+              label="Password"
               type="password"
-              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="••••••••"
               required
+              autoComplete="current-password"
             />
           </div>
-          
-          <button
+
+          <Button
             type="submit"
+            className="w-full"
+            size="lg"
             disabled={loading}
-            className={`w-full py-2 px-4 rounded-md text-white font-medium transition-colors ${
-              loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-            }`}
           >
-            {loading ? 'Logging in...' : 'Log In'}
-          </button>
-          
-          <p className="text-center text-sm text-gray-600 mt-4">
-            Don't have an account?{' '}
-            <Link href="/signup" className="text-blue-600 hover:underline">
-              Sign up
-            </Link>
-          </p>
+            {loading ? 'Logging in...' : 'Sign in'}
+          </Button>
         </form>
       </div>
-    </Container>
+    </div>
   );
 }

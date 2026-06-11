@@ -12,6 +12,7 @@ export type EventCardProps = {
   category: string;
   datetime: string;
   isInitialSaved?: boolean;
+  isInitialRegistered?: boolean;
   className?: string;
 };
 
@@ -36,19 +37,21 @@ export function EventCard({
   category,
   datetime,
   isInitialSaved = false,
+  isInitialRegistered = false,
   className = "",
 }: EventCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(isInitialSaved);
   const [isSaving, setIsSaving] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(isInitialRegistered);
 
   const handleSave = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     setIsSaving(true);
     try {
-      const response = await saveEvent({ userId: 1, eventId: id });
+      const response = await saveEvent({ userId: 0, eventId: id });
       if (response.success) {
         setIsSaved(response.saved);
       }
@@ -57,6 +60,11 @@ export function EventCard({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleRegistrationSuccess = () => {
+    setIsRegistered(true);
+    setIsModalOpen(false);
   };
 
   return (
@@ -125,10 +133,24 @@ export function EventCard({
 
         <div className="mt-6">
           <button
-            onClick={() => setIsModalOpen(true)}
-            className="inline-flex w-full items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 sm:w-auto sm:px-5"
+            onClick={() => !isRegistered && setIsModalOpen(true)}
+            disabled={isRegistered}
+            className={`inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto sm:px-5 ${
+              isRegistered
+                ? "bg-emerald-100 text-emerald-700 cursor-default"
+                : "bg-slate-950 text-white hover:bg-slate-800 focus:ring-slate-950"
+            }`}
           >
-            Register
+            {isRegistered ? (
+              <span className="flex items-center gap-2">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+                Registered
+              </span>
+            ) : (
+              "Register"
+            )}
           </button>
         </div>
       </article>
@@ -136,6 +158,7 @@ export function EventCard({
       <RegistrationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onSuccess={handleRegistrationSuccess}
         eventId={id}
         eventTitle={title}
       />

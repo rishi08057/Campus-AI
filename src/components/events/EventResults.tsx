@@ -8,6 +8,8 @@ export type EventResultsProps = {
   error: string | null;
   onRetry?: () => void;
   isSearching?: boolean;
+  savedEventIds?: number[];
+  registeredEventIds?: number[];
 };
 
 function EventCardSkeleton() {
@@ -43,6 +45,8 @@ export function EventResults({
   error,
   onRetry,
   isSearching = false,
+  savedEventIds = [],
+  registeredEventIds = [],
 }: EventResultsProps) {
   // Loading state
   if (isLoading) {
@@ -113,6 +117,8 @@ export function EventResults({
             venue={event.venue}
             category={event.category}
             datetime={event.datetime}
+            isInitialSaved={savedEventIds.includes(event.id)}
+            isInitialRegistered={registeredEventIds.includes(event.id)}
           />
         </div>
       ))}

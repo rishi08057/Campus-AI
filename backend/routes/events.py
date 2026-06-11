@@ -1,65 +1,79 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
 
 from ..data.mock_events import MOCK_EVENTS
 from ..schemas.event import Event, EventRegistration, EventRegistrationResponse, EventSave, EventSaveResponse
-from ..data.registrations import REGISTRATIONS, SAVED_EVENTS
-
+from ..dependencies import get_current_user
+from ..database import get_db
+from ..models import User, Registration, UserEventSave
 
 router = APIRouter(prefix="/events", tags=["events"])
 
 
 @router.get("", response_model=list[Event])
 def read_events() -> list[Event]:
-    # The API returns static fixtures for now so the frontend can integrate
-    # against a stable, validated contract without waiting on persistence.
+    # Public endpoint returning mock events
     return MOCK_EVENTS
 
 @router.post("/register", response_model=EventRegistrationResponse)
-def register_for_event(registration: EventRegistration) -> EventRegistrationResponse:
+def register_for_event(
+    registration_in: EventRegistration, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+) -> EventRegistrationResponse:
     # Validate event existence
-    event_exists = any(event.id == registration.eventId for event in MOCK_EVENTS)
+    event_exists = any(event.id == registration_in.eventId for event in MOCK_EVENTS)
     if not event_exists:
         raise HTTPException(status_code=404, detail="Event not found")
-    
-    # Check if already registered
-    already_registered = any(
-        r.userId == registration.userId and r.eventId == registration.eventId 
-        for r in REGISTRATIONS
-    )
-    
-    if already_registered:
+
+    # Check if already registered in DB
+    existing_reg = db.query(Registration).filter(
+        Registration.user_id == current_user.id,
+        Registration.event_id == registration_in.eventId
+    ).first()
+
+    if existing_reg:
         return EventRegistrationResponse(
             message="User already registered for this event",
             success=False,
-            registration=registration
+            registration=registration_in
         )
 
-    # Store registration
-    REGISTRATIONS.append(registration)
-    
+    # Store registration in DB
+    new_reg = Registration(
+        user_id=current_user.id,
+        event_id=registration_in.eventId
+    )
+    db.add(new_reg)
+    db.commit()
+
     return EventRegistrationResponse(
         message="Successfully registered for the event",
         success=True,
-        registration=registration
+        registration=registration_in
     )
 
 @router.post("/save", response_model=EventSaveResponse)
-def save_event(save_req: EventSave) -> EventSaveResponse:
+def save_event(
+    save_req: EventSave, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+) -> EventSaveResponse:
     # Validate event existence
     event_exists = any(event.id == save_req.eventId for event in MOCK_EVENTS)
     if not event_exists:
         raise HTTPException(status_code=404, detail="Event not found")
-    
-    # Check if already saved
-    existing_save_idx = next(
-        (i for i, s in enumerate(SAVED_EVENTS) 
-         if s.userId == save_req.userId and s.eventId == save_req.eventId),
-        None
-    )
-    
-    if existing_save_idx is not None:
-        # Toggle: If already saved, unsave it
-        SAVED_EVENTS.pop(existing_save_idx)
+
+    # Check if already saved in DB
+    existing_save = db.query(UserEventSave).filter(
+        UserEventSave.user_id == current_user.id,
+        UserEventSave.event_id == save_req.eventId
+    ).first()
+
+    if existing_save:
+        # Toggle: If already saved, unsave it (delete from DB)
+        db.delete(existing_save)
+        db.commit()
         return EventSaveResponse(
             message="Event removed from saved list",
             success=True,
@@ -67,9 +81,14 @@ def save_event(save_req: EventSave) -> EventSaveResponse:
             eventId=save_req.eventId
         )
 
-    # Store saved event
-    SAVED_EVENTS.append(save_req)
-    
+    # Store saved event in DB
+    new_save = UserEventSave(
+        user_id=current_user.id,
+        event_id=save_req.eventId
+    )
+    db.add(new_save)
+    db.commit()
+
     return EventSaveResponse(
         message="Event saved successfully",
         success=True,
@@ -78,18 +97,23 @@ def save_event(save_req: EventSave) -> EventSaveResponse:
     )
 
 @router.get("/saved", response_model=list[Event])
-def get_saved_events(userId: int = 1) -> list[Event]:
-    # Get IDs of saved events for the user
-    saved_ids = [s.eventId for s in SAVED_EVENTS if s.userId == userId]
-    # Return full event objects
+def get_saved_events(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+) -> list[Event]:
+    # Get IDs of saved events from DB
+    saved_records = db.query(UserEventSave).filter(UserEventSave.user_id == current_user.id).all()
+    saved_ids = [s.event_id for s in saved_records]
+    # Return full event objects from mock data
     return [e for e in MOCK_EVENTS if e.id in saved_ids]
 
 @router.get("/registered", response_model=list[Event])
-def get_registered_events(userId: int = 1) -> list[Event]:
-    """
-    Retrieve full details of events the user has registered for.
-    """
-    # Get IDs of events the user is registered for
-    registered_ids = [r.eventId for r in REGISTRATIONS if r.userId == userId]
-    # Return full event objects
+def get_registered_events(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+) -> list[Event]:
+    # Get IDs of events the user is registered for from DB
+    registered_records = db.query(Registration).filter(Registration.user_id == current_user.id).all()
+    registered_ids = [r.event_id for r in registered_records]
+    # Return full event objects from mock data
     return [e for e in MOCK_EVENTS if e.id in registered_ids]

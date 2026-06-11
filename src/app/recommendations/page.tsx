@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Container from "@/components/ui/Container";
+import { Container } from "@/components/ui/Container";
 import RecommendationCard from "@/components/events/RecommendationCard";
 import type { Recommendation } from "@/types/recommendation";
-import ApiClient from "@/lib/api";
+import { apiClient, getRecommendations } from "@/lib/api";
+import type { Event } from "@/types/event";
 
 type RecommendationsPageState = {
   recommendations: Recommendation[];
@@ -24,24 +25,7 @@ export default function RecommendationsPage() {
       try {
         setState((prev) => ({ ...prev, loading: true, error: null }));
 
-        // Fetch events first (since we need them as the base)
-        const eventsResponse = await ApiClient.get("/events");
-        const events = Array.isArray(eventsResponse.data) ? eventsResponse.data : [];
-
-        // In a real scenario, you'd have a dedicated /recommendations endpoint
-        // For now, we'll create sample recommendations from the fetched events
-        const recommendations: Recommendation[] = events.slice(0, 6).map((event, index) => ({
-          event,
-          reason: [
-            "category-match",
-            "trending",
-            "personalized",
-            "new",
-            "nearby",
-            "popular",
-          ][index % 6] as const,
-          confidence: 0.65 + Math.random() * 0.3,
-        }));
+        const recommendations = await getRecommendations();
 
         setState({
           recommendations,

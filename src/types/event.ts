@@ -6,3 +6,26 @@ export interface Event {
   category: string;
   datetime: string;
 }
+
+export interface EventRegistration {
+  userId: number;
+  eventId: number;
+}
+
+export interface EventRegistrationResponse {
+  message: string;
+  success: boolean;
+  registration: EventRegistration;
+}
+
+export interface EventSave {
+  userId: number;
+  eventId: number;
+}
+
+export interface EventSaveResponse {
+  message: string;
+  success: boolean;
+  saved: boolean;
+  eventId: number;
+}

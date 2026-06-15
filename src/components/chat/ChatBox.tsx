@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { apiClient } from "@/lib/api";
-import { loadChatSession, saveChatSession, clearChatSession } from "@/lib/chatStorage";
+import { loadChatSession, saveChatSession } from "@/lib/chatStorage";
 import { ChatHistory } from "@/components/chat/ChatHistory";
 import { InputArea } from "@/components/chat/InputArea";
 import { TypingIndicator } from "@/components/chat/TypingIndicator";
@@ -18,6 +18,8 @@ import type {
 export type ChatBoxProps = {
   className?: string;
   placeholder?: string;
+  sessionId: string;
+  onNewMessage?: () => void;
 };
 
 function normalizeAssistantResponse(data: ChatSuccessResponse | string | null): NormalizedChatReply {
@@ -61,32 +63,33 @@ function readErrorMessage(error: unknown): string {
   return "Failed to send message";
 }
 
-export function ChatBox({ className = "", placeholder = "Write a message..." }: ChatBoxProps) {
+export function ChatBox({ className = "", placeholder = "Write a message...", sessionId, onNewMessage }: ChatBoxProps) {
   const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState<boolean>(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Load chat session from localStorage on mount
+  // Load chat session from localStorage when sessionId changes
   useEffect(() => {
-    const session = loadChatSession();
-    setMessages(session.messages);
-    // Try to retrieve session_id if stored in session object (need to update chatStorage too, but for now we'll handle it here)
-    const storedSession = typeof window !== 'undefined' ? localStorage.getItem('campusai_session_id') : null;
-    if (storedSession) setSessionId(storedSession);
+    if (sessionId) {
+      const session = loadChatSession(sessionId);
+      setMessages(session?.messages || []);
+    } else {
+      setMessages([]);
+    }
     setMounted(true);
-  }, []);
+  }, [sessionId]);
 
   // Save messages to localStorage whenever they change
   useEffect(() => {
-    if (mounted && messages.length > 0) {
-      saveChatSession(messages);
+    if (mounted && sessionId && messages.length > 0) {
+      saveChatSession(sessionId, messages);
+      if (onNewMessage) onNewMessage();
     }
-  }, [messages, mounted]);
+  }, [messages, mounted, sessionId, onNewMessage]);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -120,12 +123,6 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
       const normalizedReply = normalizeAssistantResponse(res.data);
       const assistantTimestamp = Date.now();
 
-      // Update session ID if returned
-      if (typeof res.data !== 'string' && res.data?.session_id) {
-        setSessionId(res.data.session_id);
-        localStorage.setItem('campusai_session_id', res.data.session_id);
-      }
-
       setMessages((currentMessages) => [
         ...currentMessages,
         { role: "assistant", content: normalizedReply.text, timestamp: assistantTimestamp },
@@ -146,9 +143,8 @@ export function ChatBox({ className = "", placeholder = "Write a message..." }: 
       setInput("");
       setError(null);
       setLoading(false);
-      setSessionId(null);
-      localStorage.removeItem('campusai_session_id');
-      clearChatSession();
+      saveChatSession(sessionId, []);
+      if (onNewMessage) onNewMessage();
     }
   }
 

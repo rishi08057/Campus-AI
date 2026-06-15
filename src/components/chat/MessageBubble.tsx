@@ -42,10 +42,10 @@ export function MessageBubble({ role, content, timestamp }: MessageBubbleProps) 
         className={`flex max-w-full flex-col gap-2 rounded-2xl px-4 py-3 text-sm leading-6 shadow-md transition-all duration-200 hover:shadow-lg sm:max-w-[85%] sm:px-5 sm:py-4 md:max-w-[70%] lg:max-w-[60%] ${
           isUser
             ? "rounded-br-none bg-gradient-to-r from-slate-900 to-slate-950 text-white"
-            : "rounded-bl-none border border-slate-200/60 bg-white shadow-sm"
+            : "rounded-bl-none border border-slate-200/60 bg-white shadow-sm text-slate-900"
         }`}
       >
-        <div className="whitespace-pre-wrap break-words text-slate-900">{content}</div>
+        <div className="whitespace-pre-wrap break-words">{content}</div>
         {timeString ? (
           <div
             className={`text-xs font-medium tracking-wide ${

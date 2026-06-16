@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/Container";
 import RecommendationCard from "@/components/events/RecommendationCard";
 import type { Recommendation } from "@/types/recommendation";
-import { apiClient, getRecommendations } from "@/lib/api";
+import { apiClient, getRecommendations, getRegisteredEvents, getSavedEvents } from "@/lib/api";
 import type { Event } from "@/types/event";
 
 type RecommendationsPageState = {
   recommendations: Recommendation[];
+  registeredEventIds: number[];
+  savedEventIds: number[];
   loading: boolean;
   error: string | null;
 };
@@ -16,6 +18,8 @@ type RecommendationsPageState = {
 export default function RecommendationsPage() {
   const [state, setState] = useState<RecommendationsPageState>({
     recommendations: [],
+    registeredEventIds: [],
+    savedEventIds: [],
     loading: true,
     error: null,
   });
@@ -25,20 +29,33 @@ export default function RecommendationsPage() {
       try {
         setState((prev) => ({ ...prev, loading: true, error: null }));
 
-        const recommendations = await getRecommendations();
+        const token = typeof document !== 'undefined' && document.cookie.includes('token=');
+        
+        const promises: [Promise<Recommendation[]>, Promise<Event[]>?, Promise<Event[]>?] = [
+          getRecommendations()
+        ];
+
+        if (token) {
+          promises.push(getRegisteredEvents());
+          promises.push(getSavedEvents());
+        }
+
+        const [recommendations, registeredEvents, savedEvents] = await Promise.all(promises);
 
         setState({
-          recommendations,
+          recommendations: recommendations || [],
+          registeredEventIds: registeredEvents ? registeredEvents.map(e => e.id) : [],
+          savedEventIds: savedEvents ? savedEvents.map(e => e.id) : [],
           loading: false,
           error: null,
         });
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Failed to load recommendations";
-        setState({
-          recommendations: [],
+        setState((prev) => ({
+          ...prev,
           loading: false,
           error: errorMessage,
-        });
+        }));
       }
     };
 
@@ -86,6 +103,8 @@ export default function RecommendationsPage() {
               <RecommendationCard
                 key={`${recommendation.event.id}-${recommendation.reason}`}
                 recommendation={recommendation}
+                isInitialRegistered={state.registeredEventIds.includes(recommendation.event.id)}
+                isInitialSaved={state.savedEventIds.includes(recommendation.event.id)}
               />
             ))}
           </div>

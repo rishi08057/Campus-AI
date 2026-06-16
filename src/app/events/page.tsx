@@ -23,7 +23,7 @@ export default function EventsPage() {
     setLoading(true);
     setError(null);
     try {
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
+      const token = typeof document !== 'undefined' && document.cookie.includes('token=');
       
       const promises: any[] = [
         apiClient.get<EventType[]>("/events")

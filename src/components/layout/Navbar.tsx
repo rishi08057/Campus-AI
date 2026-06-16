@@ -29,7 +29,7 @@ export function Navbar({
   const pathname = usePathname();
 
   useEffect(() => {
-    const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
+    const token = typeof document !== "undefined" && document.cookie.includes("token=");
     setIsLoggedIn(!!token);
   }, [pathname]);
 

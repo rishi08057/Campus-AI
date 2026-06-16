@@ -121,6 +121,7 @@ export default function ProfilePage() {
                   key={event.id} 
                   {...event} 
                   isInitialSaved={savedEvents.some(s => s.id === event.id)}
+                  isInitialRegistered={true}
                 />
               ))}
             </div>
@@ -142,7 +143,12 @@ export default function ProfilePage() {
           {savedEvents.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {savedEvents.map((event) => (
-                <EventCard key={event.id} {...event} isInitialSaved={true} />
+                <EventCard 
+                  key={event.id} 
+                  {...event} 
+                  isInitialSaved={true} 
+                  isInitialRegistered={registeredEvents.some(r => r.id === event.id)}
+                />
               ))}
             </div>
           ) : (

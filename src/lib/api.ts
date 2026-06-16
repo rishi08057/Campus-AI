@@ -15,10 +15,19 @@ export const apiClient = axios.create({
   timeout: 15000,
 });
 
+// Utility to read cookies
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+}
+
 // Add a request interceptor to add the auth token to headers
 apiClient.interceptors.request.use(
   (config) => {
-    const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
+    const token = getCookie('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -46,8 +55,7 @@ export async function login(email: string, password: string): Promise<Token> {
   });
   
   if (response.data.access_token) {
-    sessionStorage.setItem('token', response.data.access_token);
-    // Set session cookie for middleware (no expiration date means it clears on browser close)
+    // Set session cookie for middleware and client (no expiration date means it clears on browser close)
     document.cookie = `token=${response.data.access_token}; path=/; SameSite=Lax`;
   }
   
@@ -55,7 +63,6 @@ export async function login(email: string, password: string): Promise<Token> {
 }
 
 export async function logout() {
-  sessionStorage.removeItem('token');
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 

@@ -4,10 +4,13 @@ import { useState } from "react";
 import type { Recommendation } from "@/types/recommendation";
 import { getRecommendationLabel, getRecommendationBadgeColor } from "@/types/recommendation";
 import { RegistrationModal } from "./RegistrationModal";
+import { saveEvent } from "@/lib/api";
 
 export type RecommendationCardProps = {
   recommendation: Recommendation;
   className?: string;
+  isInitialRegistered?: boolean;
+  isInitialSaved?: boolean;
 };
 
 function formatDateTime(datetime: string) {
@@ -26,9 +29,14 @@ function formatDateTime(datetime: string) {
 export function RecommendationCard({
   recommendation,
   className = "",
+  isInitialRegistered = false,
+  isInitialSaved = false,
 }: RecommendationCardProps) {
   const { event, reason, confidence } = recommendation;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(isInitialRegistered);
+  const [isSaved, setIsSaved] = useState(isInitialSaved);
+  const [isSaving, setIsSaving] = useState(false);
   
   const label = getRecommendationLabel(reason);
   const badgeColor = getRecommendationBadgeColor(reason);
@@ -42,6 +50,28 @@ export function RecommendationCard({
   };
 
   const badgeClasses = badgeColorMap[badgeColor] || badgeColorMap.sky;
+
+  const handleRegistrationSuccess = () => {
+    setIsRegistered(true);
+    setIsModalOpen(false);
+  };
+
+  const handleSave = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsSaving(true);
+    try {
+      const response = await saveEvent({ userId: 0, eventId: event.id });
+      if (response.success) {
+        setIsSaved(response.saved);
+      }
+    } catch (err) {
+      console.error("Failed to save event:", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <>
@@ -97,17 +127,41 @@ export function RecommendationCard({
 
         <div className="mt-6 flex gap-3">
           <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex-1 inline-flex items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2"
+            onClick={() => !isRegistered && setIsModalOpen(true)}
+            disabled={isRegistered}
+            className={`flex-1 inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 ${
+              isRegistered
+                ? "bg-emerald-100 text-emerald-700 cursor-default"
+                : "bg-slate-950 text-white hover:bg-slate-800"
+            }`}
           >
-            Register
+            {isRegistered ? (
+              <span className="flex items-center gap-2">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+                Registered
+              </span>
+            ) : (
+              "Register"
+            )}
           </button>
           <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            onClick={handleSave}
+            disabled={isSaving}
+            className={`inline-flex items-center justify-center rounded-2xl border px-4 py-3 text-sm font-semibold transition focus:outline-none ${
+              isSaved 
+                ? "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100" 
+                : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+            }`}
+            title={isSaved ? "Unsave event" : "Save event"}
             aria-label="Save recommendation"
           >
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none">
+            <svg 
+              className={`h-5 w-5 ${isSaving ? 'animate-pulse' : ''}`} 
+              viewBox="0 0 24 24" 
+              fill={isSaved ? "currentColor" : "none"}
+            >
               <path
                 d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
                 stroke="currentColor"
@@ -123,6 +177,7 @@ export function RecommendationCard({
       <RegistrationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onSuccess={handleRegistrationSuccess}
         eventId={event.id}
         eventTitle={event.title}
       />

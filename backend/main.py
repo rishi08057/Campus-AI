@@ -9,15 +9,15 @@ except Exception:
     pass
 
 from .config import get_cors_origins
-from .routes.chat import router as chat_router
-from .routes.events import router as events_router
-from .routes.health import router as health_router
-from .routes.root import router as root_router
-from .routes.profile import router as profile_router
-from .routes.recommendations import router as recommendations_router
-from .routes.auth import router as auth_router
-from .routes.tickets import router as tickets_router
-from .routes.admin import router as admin_router
+from .api.routes.chat import router as chat_router
+from .api.routes.events import router as events_router
+from .api.routes.health import router as health_router
+from .api.routes.root import router as root_router
+from .api.routes.profile import router as profile_router
+from .api.routes.recommendations import router as recommendations_router
+from .api.routes.auth import router as auth_router
+from .api.routes.tickets import router as tickets_router
+from .api.routes.admin import router as admin_router
 
 from .database import (
     engine,
@@ -28,7 +28,7 @@ from .database import (
 from .models import Event
 from . import models
 
-from .services.vector_service import vector_service
+from .services.rag_service import vector_service
 
 # --------------------------------------------------
 # Create Database Tables

@@ -126,6 +126,7 @@ export default function MyEventsPage() {
                 key={event.id} 
                 {...event} 
                 isInitialSaved={savedEvents.some(s => s.id === event.id)} 
+                isInitialRegistered={registeredEvents.some(r => r.id === event.id)}
               />
             ))}
           </div>

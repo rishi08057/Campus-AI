@@ -18,7 +18,7 @@ export const apiClient = axios.create({
 // Add a request interceptor to add the auth token to headers
 apiClient.interceptors.request.use(
   (config) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -46,18 +46,16 @@ export async function login(email: string, password: string): Promise<Token> {
   });
   
   if (response.data.access_token) {
-    localStorage.setItem('token', response.data.access_token);
-    // Set cookie for middleware (7 days expiration)
-    const expires = new Date();
-    expires.setDate(expires.getDate() + 7);
-    document.cookie = `token=${response.data.access_token}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
+    sessionStorage.setItem('token', response.data.access_token);
+    // Set session cookie for middleware (no expiration date means it clears on browser close)
+    document.cookie = `token=${response.data.access_token}; path=/; SameSite=Lax`;
   }
   
   return response.data;
 }
 
 export async function logout() {
-  localStorage.removeItem('token');
+  sessionStorage.removeItem('token');
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 

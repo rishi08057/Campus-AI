@@ -2,16 +2,16 @@ from fastapi import APIRouter, Depends
 from typing import List
 from sqlalchemy.orm import Session
 
-from ..schemas.recommendation import Recommendation
-from ..schemas.user import UserProfile
-from ..schemas.event import (
+from ...schemas.recommendation import Recommendation
+from ...schemas.user import UserProfile
+from ...schemas.event import (
     EventSave,
     EventRegistration,
 )
-from ..services.recommendation_service import recommendation_service
-from ..dependencies import get_current_user
-from ..database import get_db
-from ..models import (
+from ...services.recommendation_service import recommendation_service
+from ...dependencies import get_current_user
+from ...database import get_db
+from ...models import (
     User,
     Registration,
     SavedEvent,

@@ -42,6 +42,12 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    chat_sessions = relationship(
+        "ChatSession",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
 
 class Event(Base):
     __tablename__ = "events"
@@ -105,12 +111,55 @@ class Registration(Base):
         back_populates="registrations",
     )
 
+    ticket = relationship(
+        "Ticket",
+        back_populates="registration",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
+
     __table_args__ = (
         UniqueConstraint(
             "user_id",
             "event_id",
             name="_user_event_registration_uc",
         ),
+    )
+
+
+class Ticket(Base):
+    __tablename__ = "tickets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    
+    ticket_id = Column(
+        String,
+        unique=True,
+        index=True,
+        nullable=False,
+        default=lambda: str(uuid.uuid4())
+    )
+
+    registration_id = Column(
+        Integer,
+        ForeignKey("registrations.id"),
+        unique=True,
+        nullable=False,
+    )
+
+    qr_code_url = Column(String)
+
+    is_checked_in = Column(Integer, default=0) # 0 for false, 1 for true
+    check_in_time = Column(DateTime, nullable=True)
+
+    created_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+    registration = relationship(
+        "Registration",
+        back_populates="ticket",
     )
 
 
@@ -167,9 +216,21 @@ class ChatSession(Base):
         default=lambda: str(uuid.uuid4()),
     )
 
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True,
+    )
+
     created_at = Column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
+    )
+
+    user = relationship(
+        "User",
+        back_populates="chat_sessions",
     )
 
     messages = relationship(

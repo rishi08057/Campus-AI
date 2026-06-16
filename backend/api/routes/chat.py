@@ -2,16 +2,16 @@ from fastapi import APIRouter, Depends
 import logging
 from sqlalchemy.orm import Session
 
-from ..schemas.chat import ChatRequest, ChatResponse
-from ..services.ai_service import generate_ai_response
-from ..database import get_db
-from ..models import (
+from ...schemas.chat import ChatRequest, ChatResponse
+from ...services.event_chat_service import generate_ai_response
+from ...database import get_db
+from ...models import (
     User,
     ChatSession,
     ChatMessage as DBChatMessage,
 )
-from ..services.vector_service import vector_service
-from ..dependencies import get_current_user
+from ...services.rag_service import vector_service
+from ...dependencies import get_current_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -164,25 +164,7 @@ async def create_chat_reply(
                 "or state that no suitable event exists."
             )
 
-        system_prompt = f"""
-You are CampusAI Event Agent.
-
-Context from Event Database:
-{event_context}
-
-Responsibilities:
-- Recommend events from the provided context.
-- Explain workshops, hackathons, competitions, and campus activities.
-- Help students discover opportunities.
-- Explain why an event is relevant to a student's interests.
-- Answer questions about participation and benefits.
-
-Rules:
-- ONLY use events provided in the Context section above.
-- If no suitable event exists in the context, clearly state that.
-- Mention event title, venue, date, and purpose when recommending an event.
-- Be concise, professional, and student-friendly.
-"""
+        system_prompt = EVENT_AGENT_SYSTEM_PROMPT_TEMPLATE.format(event_context=event_context)
 
         ai_reply = await generate_ai_response(
             message=message,
@@ -229,4 +211,4 @@ Rules:
         return ChatResponse(
             response=fallback,
             session_id=session_id,
-        )
+        )       

@@ -2,16 +2,16 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 import uuid
 
-from ..schemas.event import (
+from ...schemas.event import (
     Event,
     EventRegistration,
     EventRegistrationResponse,
     EventSave,
     EventSaveResponse,
 )
-from ..dependencies import get_current_user
-from ..database import get_db
-from ..models import (
+from ...dependencies import get_current_user
+from ...database import get_db
+from ...models import (
     User,
     Registration,
     SavedEvent,

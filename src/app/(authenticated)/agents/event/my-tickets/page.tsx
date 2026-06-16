@@ -108,7 +108,7 @@ export default function MyTicketsPage() {
               You haven&apos;t registered for any events yet.
             </p>
             <Link
-              href="/events"
+              href="/agents/event/events"
               className="mt-8 inline-flex rounded-2xl bg-slate-950 px-8 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
               Browse Events

@@ -29,7 +29,7 @@ export function Navbar({
   const pathname = usePathname();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = typeof document !== "undefined" && document.cookie.includes("token=");
     setIsLoggedIn(!!token);
   }, [pathname]);
 
@@ -41,14 +41,7 @@ export function Navbar({
 
   const authLinks = isLoggedIn
     ? [
-        { label: "Events", href: "/events" },
-        { label: "For You", href: "/recommendations" },
-        { label: "My Events", href: "/my-events" },
-        {label: "My Tickets", href: "/my-tickets" },
-        { label: "Check-In", href: "/check-in" },
-        { label: "Dashboard", href: "/admin/dashboard" },
-        { label: "Chat", href: "/chat" },
-
+        { label: "Dashboard", href: "/dashboard" },
         { label: "Profile", href: "/profile" },
       ]
     : [

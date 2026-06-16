@@ -5,8 +5,13 @@ from sqlalchemy.orm import Session
 from ..schemas.chat import ChatRequest, ChatResponse
 from ..services.ai_service import generate_ai_response
 from ..database import get_db
-from ..models import ChatSession, ChatMessage as DBChatMessage
+from ..models import (
+    User,
+    ChatSession,
+    ChatMessage as DBChatMessage,
+)
 from ..services.vector_service import vector_service
+from ..dependencies import get_current_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -42,7 +47,11 @@ def generate_chat_response(message: str) -> str:
 
 
 @router.post("", response_model=ChatResponse)
-async def create_chat_reply(payload: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse:
+async def create_chat_reply(
+    payload: ChatRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ChatResponse:
     """
     Route that forwards user messages to Gemini and returns the assistant reply.
 
@@ -54,55 +63,106 @@ async def create_chat_reply(payload: ChatRequest, db: Session = Depends(get_db))
     if not message:
         return ChatResponse(
             response=generate_chat_response(message),
-            session_id=payload.session_id or "default"
+            session_id=payload.session_id or "default",
         )
 
-    # 1. Handle Session
+    # --------------------------------------------------
+    # Handle Session Ownership
+    # --------------------------------------------------
+
     session_id = payload.session_id
+
     if session_id:
-        session = db.query(ChatSession).filter(ChatSession.id == session_id).first()
+        session = (
+            db.query(ChatSession)
+            .filter(
+                ChatSession.id == session_id,
+                ChatSession.user_id == current_user.id,
+            )
+            .first()
+        )
+
         if not session:
-            session = ChatSession(id=session_id)
+            session = ChatSession(
+                id=session_id,
+                user_id=current_user.id,
+            )
+
             db.add(session)
             db.commit()
+
     else:
-        session = ChatSession()
+        session = ChatSession(
+            user_id=current_user.id,
+        )
+
         db.add(session)
         db.commit()
         db.refresh(session)
+
         session_id = session.id
 
-    # 2. Save User Message
-    user_msg = DBChatMessage(session_id=session_id, role="user", content=message)
+    # --------------------------------------------------
+    # Save User Message
+    # --------------------------------------------------
+
+    user_msg = DBChatMessage(
+        session_id=session_id,
+        role="user",
+        content=message,
+    )
+
     db.add(user_msg)
     db.commit()
 
-    # 3. Load history from DB (last 10 messages)
+    # --------------------------------------------------
+    # Load Previous History
+    # --------------------------------------------------
+
     db_history = (
         db.query(DBChatMessage)
         .filter(DBChatMessage.session_id == session_id)
         .order_by(DBChatMessage.created_at.desc())
-        .offset(1)  # Skip the current user message for history
+        .offset(1)
         .limit(10)
         .all()
     )
-    
-    # Reverse to get chronological order
+
     history_data = [
-        {"role": m.role, "content": m.content} for m in reversed(db_history)
+        {
+            "role": msg.role,
+            "content": msg.content,
+        }
+        for msg in reversed(db_history)
     ]
 
-    # 4. Semantic Search for Context (RAG)
+    # --------------------------------------------------
+    # RAG + Gemini
+    # --------------------------------------------------
+
     try:
-        relevant_events = vector_service.search_events(message, n_results=3)
-        
-        event_context = ""
+        relevant_events = vector_service.search_events(
+            message,
+            n_results=3,
+        )
+
         if relevant_events:
-            event_context = "Relevant Events Found:\n" + "\n".join(
-                [f"- {e['content']} (Date: {e['metadata']['datetime']})" for e in relevant_events]
+            event_context = (
+                "Relevant Events Found:\n"
+                + "\n".join(
+                    [
+                        f"- {event['content']} "
+                        f"(Date: {event['metadata']['datetime']})"
+                        for event in relevant_events
+                    ]
+                )
             )
         else:
-            event_context = "No specific events match the query perfectly, but you can still help based on general knowledge or state that no suitable event exists."
+            event_context = (
+                "No specific events match the query perfectly, "
+                "but you can still help based on general knowledge "
+                "or state that no suitable event exists."
+            )
 
         system_prompt = f"""
 You are CampusAI Event Agent.
@@ -131,23 +191,42 @@ Rules:
         )
 
         if not ai_reply:
-            raise RuntimeError("AI provider returned an empty response")
+            raise RuntimeError(
+                "AI provider returned an empty response"
+            )
 
-        # 5. Save AI Response
-        assistant_msg = DBChatMessage(session_id=session_id, role="assistant", content=ai_reply)
+        assistant_msg = DBChatMessage(
+            session_id=session_id,
+            role="assistant",
+            content=ai_reply,
+        )
+
         db.add(assistant_msg)
         db.commit()
 
-        return ChatResponse(response=ai_reply, session_id=session_id)
+        return ChatResponse(
+            response=ai_reply,
+            session_id=session_id,
+        )
 
     except Exception as exc:
-        logging.exception("AI service error: %s", exc)
+        logging.exception(
+            "AI service error: %s",
+            exc,
+        )
 
         fallback = generate_chat_response(message)
-        
-        # Save fallback as well to maintain history
-        assistant_msg = DBChatMessage(session_id=session_id, role="assistant", content=fallback)
+
+        assistant_msg = DBChatMessage(
+            session_id=session_id,
+            role="assistant",
+            content=fallback,
+        )
+
         db.add(assistant_msg)
         db.commit()
-        
-        return ChatResponse(response=fallback, session_id=session_id)
+
+        return ChatResponse(
+            response=fallback,
+            session_id=session_id,
+        )

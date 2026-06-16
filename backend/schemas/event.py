@@ -1,24 +1,37 @@
-from datetime import datetime
+from datetime import datetime as DateTime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class Event(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int = Field(..., description="Unique identifier for the event.")
     title: str = Field(..., min_length=1, description="Title of the event.")
     description: str = Field(..., description="Detailed description of the event.")
     venue: str = Field(..., description="Location where the event takes place.")
-    category: str = Field(..., description="The type of event (e.g., Workshop, Competition).")
-    event_datetime: datetime = Field(
+    category: str = Field(
+        ...,
+        description="The type of event (e.g., Workshop, Competition)."
+    )
+
+    datetime: DateTime = Field(
         ...,
         description="The scheduled date and time for the event."
     )
 
 
 class EventActionBase(BaseModel):
-    userId: int = Field(..., description="The ID of the user performing the action.")
-    eventId: int = Field(..., description="The ID of the event being acted upon.")
+    userId: int = Field(
+        ...,
+        description="The ID of the user performing the action."
+    )
+
+    eventId: int = Field(
+        ...,
+        description="The ID of the event being acted upon."
+    )
 
 
 class EventRegistration(EventActionBase):
@@ -26,8 +39,15 @@ class EventRegistration(EventActionBase):
 
 
 class BaseResponse(BaseModel):
-    success: bool = Field(..., description="Indicates if the request was successful.")
-    message: str = Field(..., description="A human-readable message about the result.")
+    success: bool = Field(
+        ...,
+        description="Indicates if the request was successful."
+    )
+
+    message: str = Field(
+        ...,
+        description="A human-readable message about the result."
+    )
 
 
 class EventRegistrationResponse(BaseResponse):
@@ -42,5 +62,12 @@ class EventSave(EventActionBase):
 
 
 class EventSaveResponse(BaseResponse):
-    saved: bool = Field(..., description="Indicates if the event is currently saved.")
-    eventId: int = Field(..., description="The ID of the event.")
+    saved: bool = Field(
+        ...,
+        description="Indicates if the event is currently saved."
+    )
+
+    eventId: int = Field(
+        ...,
+        description="The ID of the event."
+    )

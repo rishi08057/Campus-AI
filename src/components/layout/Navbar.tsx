@@ -44,7 +44,11 @@ export function Navbar({
         { label: "Events", href: "/events" },
         { label: "For You", href: "/recommendations" },
         { label: "My Events", href: "/my-events" },
+        {label: "My Tickets", href: "/my-tickets" },
+        { label: "Check-In", href: "/check-in" },
+        { label: "Dashboard", href: "/admin/dashboard" },
         { label: "Chat", href: "/chat" },
+
         { label: "Profile", href: "/profile" },
       ]
     : [

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { registerForEvent } from "@/lib/api";
 import { EventRegistrationResponse } from "@/types/event";
 
@@ -73,19 +74,27 @@ export function RegistrationModal({
               <p className="text-slate-600">
                 {message || `You have been successfully registered for "${eventTitle}".`}
               </p>
-              <button
-                onClick={handleClose}
-                className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-              >
-                Close
-              </button>
+              <div className="flex flex-col gap-3 pt-2">
+                <Link
+                  href={`/tickets/${eventId}`}
+                  className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 text-center"
+                >
+                  View My Ticket
+                </Link>
+                <button
+                  onClick={handleClose}
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           ) : (
             <div className="space-y-6">
               <div>
                 <h3 className="text-2xl font-bold text-slate-950">Confirm Registration</h3>
                 <p className="mt-2 text-slate-600">
-                  Are you sure you want to register for <span className="font-semibold text-slate-900">"{eventTitle}"</span>?
+                  Are you sure you want to register for <span className="font-semibold text-slate-900">&quot;{eventTitle}&quot;</span>?
                 </p>
               </div>
 

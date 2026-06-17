@@ -11,6 +11,7 @@ class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, description="Message submitted by the client.")
     history: Optional[List[ChatMessage]] = Field(None, description="Recent conversation history.")
     session_id: Optional[str] = Field(None, description="Optional session ID for persistence.")
+    agent_type: str = Field("event", description="Target agent for the request (event, support).")
 
 
 class ChatResponse(BaseModel):

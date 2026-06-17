@@ -3,11 +3,10 @@ import logging
 from sqlalchemy.orm import Session
 
 from ..schemas.chat import ChatRequest, ChatResponse
-from ..services.ai_service import generate_ai_response
 from ..database import get_db
 from ..models import ChatSession, ChatMessage as DBChatMessage, User
-from ..services.vector_service import vector_service
 from ..dependencies import get_current_user
+from ..agents.router import AgentRouter
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -49,9 +48,9 @@ async def create_chat_reply(
     current_user: User = Depends(get_current_user)
 ) -> ChatResponse:
     """
-    Route that forwards user messages to Gemini and returns the assistant reply.
+    Route that forwards user messages to AgentRouter and returns the assistant reply.
 
-    If Gemini fails, the route falls back to local responses.
+    If the AI agent fails, the route falls back to local responses.
     """
 
     message = payload.message.strip()
@@ -97,42 +96,12 @@ async def create_chat_reply(
         {"role": m.role, "content": m.content} for m in reversed(db_history)
     ]
 
-    # 4. Semantic Search for Context (RAG)
+    # 4. Call Agent Router
     try:
-        relevant_events = vector_service.search_events(message, n_results=3)
-        
-        event_context = ""
-        if relevant_events:
-            event_context = "Relevant Events Found:\n" + "\n".join(
-                [f"- {e['content']} (Date: {e['metadata']['datetime']})" for e in relevant_events]
-            )
-        else:
-            event_context = "No specific events match the query perfectly, but you can still help based on general knowledge or state that no suitable event exists."
-
-        system_prompt = f"""
-You are CampusAI Event Agent.
-
-Context from Event Database:
-{event_context}
-
-Responsibilities:
-- Recommend events from the provided context.
-- Explain workshops, hackathons, competitions, and campus activities.
-- Help students discover opportunities.
-- Explain why an event is relevant to a student's interests.
-- Answer questions about participation and benefits.
-
-Rules:
-- ONLY use events provided in the Context section above.
-- If no suitable event exists in the context, clearly state that.
-- Mention event title, venue, date, and purpose when recommending an event.
-- Be concise, professional, and student-friendly.
-"""
-
-        ai_reply = await generate_ai_response(
+        ai_reply = await AgentRouter.route(
+            agent_type=payload.agent_type,
             message=message,
-            history=history_data,
-            system_prompt=system_prompt,
+            history=history_data
         )
 
         if not ai_reply:
@@ -146,7 +115,7 @@ Rules:
         return ChatResponse(response=ai_reply, session_id=session_id)
 
     except Exception as exc:
-        logging.exception("AI service error: %s", exc)
+        logging.exception("Agent service error: %s", exc)
 
         fallback = generate_chat_response(message)
         

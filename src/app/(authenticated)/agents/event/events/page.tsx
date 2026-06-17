@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Container } from "@/components/ui/Container";
 import { apiClient, getRegisteredEvents, getSavedEvents } from "@/lib/api";
 import { Event as EventType } from "@/types/event";
@@ -19,7 +19,7 @@ export default function EventsPage() {
   const [savedEventIds, setSavedEventIds] = useState<number[]>([]);
   const [registeredEventIds, setRegisteredEventIds] = useState<number[]>([]);
 
-  async function fetchEvents() {
+  const fetchEvents = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -46,12 +46,11 @@ export default function EventsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     fetchEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchEvents]);
 
   const categories = useMemo(() => {
     const uniqueCategories = Array.from(new Set(events.map((event) => event.category).filter(Boolean)));

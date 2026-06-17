@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 from ..schemas.chat import ChatRequest, ChatResponse
 from ..services.ai_service import generate_ai_response
 from ..database import get_db
-from ..models import ChatSession, ChatMessage as DBChatMessage
+from ..models import ChatSession, ChatMessage as DBChatMessage, User
 from ..services.vector_service import vector_service
+from ..dependencies import get_current_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -42,7 +43,11 @@ def generate_chat_response(message: str) -> str:
 
 
 @router.post("", response_model=ChatResponse)
-async def create_chat_reply(payload: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse:
+async def create_chat_reply(
+    payload: ChatRequest, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+) -> ChatResponse:
     """
     Route that forwards user messages to Gemini and returns the assistant reply.
 
@@ -60,13 +65,13 @@ async def create_chat_reply(payload: ChatRequest, db: Session = Depends(get_db))
     # 1. Handle Session
     session_id = payload.session_id
     if session_id:
-        session = db.query(ChatSession).filter(ChatSession.id == session_id).first()
+        session = db.query(ChatSession).filter(ChatSession.id == session_id, ChatSession.user_id == current_user.id).first()
         if not session:
-            session = ChatSession(id=session_id)
+            session = ChatSession(id=session_id, user_id=current_user.id)
             db.add(session)
             db.commit()
     else:
-        session = ChatSession()
+        session = ChatSession(user_id=current_user.id)
         db.add(session)
         db.commit()
         db.refresh(session)

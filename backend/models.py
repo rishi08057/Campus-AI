@@ -149,7 +149,7 @@ class Ticket(Base):
 
     qr_code_url = Column(String)
 
-    is_checked_in = Column(Integer, default=0) # 0 for false, 1 for true
+    is_checked_in = Column(Integer, default=0)  # 0 = false, 1 = true
     check_in_time = Column(DateTime, nullable=True)
 
     created_at = Column(

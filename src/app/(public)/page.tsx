@@ -36,13 +36,13 @@ export default function HomePage() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
-              href="/events"
+              href="/agents/event/events"
               className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-6 py-3 text-sm font-semibold !text-white shadow-lg shadow-slate-950/10 transition hover:-translate-y-0.5 hover:bg-slate-800"
             >
               Browse Events
             </Link>
             <Link
-              href="/chat"
+              href="/agents/event/chat"
               className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white/80 px-6 py-3 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white"
             >
               Open Chat Assistant

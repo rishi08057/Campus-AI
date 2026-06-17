@@ -52,7 +52,7 @@ export default function LoginPage() {
         formData.password
       );
 
-      router.push('/chat');
+      router.push('/dashboard');
       router.refresh();
     } catch (err: any) {
       if (axios.isAxiosError(err)) {

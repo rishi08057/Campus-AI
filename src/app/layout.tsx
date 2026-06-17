@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
-import { Navbar } from "@/components/layout/Navbar";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -9,8 +8,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "CampusAI Event Agent",
-  description: "A clean Next.js frontend scaffold for the CampusAI Event Agent.",
+  title: "CampusAI",
+  description: "A multi-agent platform for CampusAI.",
 };
 
 export default function RootLayout({
@@ -20,10 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.variable} antialiased`}>
-        <div className="min-h-screen">
-          <Navbar />
-          <main>{children}</main>
+      <body className={`${manrope.variable} antialiased bg-slate-50/50`}>
+        <div className="min-h-screen flex flex-col">
+          {children}
         </div>
       </body>
     </html>

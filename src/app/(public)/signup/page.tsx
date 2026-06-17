@@ -102,7 +102,7 @@ export default function SignupPage() {
       });
 
       setTimeout(() => {
-        router.push('/chat');
+        router.push('/dashboard');
       }, 2000);
     } catch (err: any) {
       if (axios.isAxiosError(err)) {

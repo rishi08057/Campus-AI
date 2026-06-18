@@ -76,7 +76,7 @@ export function RegistrationModal({
               </p>
               <div className="flex flex-col gap-3 pt-2">
                 <Link
-                  href={`/tickets/${eventId}`}
+                  href={`/agents/event/tickets/${eventId}`}
                   className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 text-center"
                 >
                   View My Ticket

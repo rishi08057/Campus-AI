@@ -82,7 +82,7 @@ export default function MyTicketsPage() {
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link
-                      href={`/tickets/${event.id}`}
+                      href={`/agents/event/tickets/${event.id}`}
                       className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
                     >
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

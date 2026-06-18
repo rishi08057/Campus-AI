@@ -135,7 +135,7 @@ export function EventCard({
         <div className="mt-6">
           {isRegistered ? (
             <Link
-              href={`/tickets/${id}`}
+              href={`/agents/event/tickets/${id}`}
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-100 px-4 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-200 sm:w-auto sm:px-5"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "attendance_req_01",
+    "category": "attendance",
+    "title": "Minimum Attendance Requirement",
+    "content": "All students at CampusAI University must maintain a minimum of 75% attendance in both theory classes and practical/laboratory sessions for each registered course. Attendance is recorded hourly by instructors. Failure to meet the 75% threshold in any course will result in the student being barred (debarred) from taking the semester-end examination for that specific course.",
+    "metadata": {
+      "policy_code": "ATT-REG-75",
+      "threshold": 75
+    }
+  },
+  {
+    "id": "attendance_shortage_02",
+    "category": "attendance",
+    "title": "Attendance Shortage and Condonation Policy",
+    "content": "Students having attendance between 65% and 74.9% due to genuine reasons (such as representing the university in events or sports) may apply for condonation of shortage. Condonation is granted up to a maximum of 10% shortage upon submission of a formal application and payment of a condonation fee of $50 per course, subject to the approval of the Dean of Academic Affairs. Students with attendance below 65% are not eligible for condonation and must repeat the course.",
+    "metadata": {
+      "policy_code": "ATT-COND-65",
+      "minimum_condonable": 65,
+      "fee": 50
+    }
+  },
+  {
+    "id": "attendance_medical_03",
+    "category": "attendance",
+    "title": "Medical Exemptions and Duty Leaves",
+    "content": "Medical exemptions are considered for students who are hospitalized or suffer from serious illnesses. To claim a medical exemption, a student must submit an official medical certificate signed by a registered medical practitioner, along with laboratory/hospitalization reports, to the Head of Department (HOD) within 3 working days of returning to campus. Duty leaves for university-sanctioned events must be pre-approved by the department coordinator. The maximum combined waiver for medical and duty leave is 10% of total classes.",
+    "metadata": {
+      "policy_code": "ATT-MED-EXEMP",
+      "submission_timeline_days": 3,
+      "max_waiver_pct": 10
+    }
+  },
+  {
+    "id": "attendance_calc_04",
+    "category": "attendance",
+    "title": "Attendance Calculation Method",
+    "content": "Attendance percentage for a course is calculated using the following formula: (Number of classes attended by the student / Total number of classes actually conducted by the instructor) * 100. Mass bunks or canceled classes do not reduce the denominator if the class is officially scheduled. Students can track their real-time attendance percentage through the CampusAI student portal under the Academics tab.",
+    "metadata": {
+      "formula": "(classes_attended / classes_conducted) * 100",
+      "portal_tab": "Academics"
+    }
+  }
+]

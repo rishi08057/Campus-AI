@@ -1,0 +1,42 @@
+[
+  {
+    "id": "room_classrooms_01",
+    "category": "rooms",
+    "title": "Classroom Locations and Lecture Halls",
+    "content": "Classrooms at CampusAI University are located across three main building blocks:\n- Block A (CSE & IT departments): Classrooms 101 to 110 (1st floor), Classrooms 201 to 210 (2nd floor), and Classrooms 301 to 310 (3rd floor).\n- Block B (ECE department): Classrooms 101 to 105 (1st floor), Classrooms 201 to 205 (2nd floor).\n- Block C (ME & Sciences): Classrooms 101 to 108 (1st floor), Classrooms 201 to 208 (2nd floor).\nAll classrooms are equipped with smart boards, high-speed Wi-Fi, and air conditioning. Standard class hours are from 8:30 AM to 4:30 PM.",
+    "metadata": {
+      "blocks": ["Block A", "Block B", "Block C"],
+      "amenities": ["smart boards", "Wi-Fi", "AC"],
+      "class_hours": "8:30 AM - 4:30 PM"
+    }
+  },
+  {
+    "id": "room_labs_02",
+    "category": "rooms",
+    "title": "Laboratory Locations and Access Hours",
+    "content": "CampusAI University hosts several state-of-the-art laboratories for hands-on learning:\n- Computer Lab 1 (Programming & DS): Block A, Room 401. Open Mon-Fri 8:30 AM to 8:00 PM, Sat 9:00 AM to 1:00 PM.\n- Computer Lab 2 (AI & ML): Block A, Room 405. Open Mon-Fri 8:30 AM to 8:00 PM.\n- Electronics & VLSI Lab: Block B, Room 301. Open Mon-Fri 9:00 AM to 5:00 PM.\n- IoT & Robotics Lab: Block B, Room 305. Open Mon-Fri 9:00 AM to 7:00 PM.\n- Mechanical Workshop: Block C, Ground Floor. Open Mon-Fri 9:00 AM to 5:00 PM.\nStudents must carry their lab coats and ID cards to enter practical labs.",
+    "metadata": {
+      "labs": ["Computer Lab 1", "Computer Lab 2", "Electronics & VLSI Lab", "IoT & Robotics Lab", "Mechanical Workshop"]
+    }
+  },
+  {
+    "id": "room_auditoriums_03",
+    "category": "rooms",
+    "title": "Auditoriums and Seminar Halls",
+    "content": "For academic events, guest lectures, and cultural activities, the campus has the following spaces:\n- Main Auditorium (Seating capacity: 1000): Located in the Central Block, Ground Floor. Used for major events and university functions.\n- Seminar Hall 1 (Seating capacity: 200): Located in Block A, 4th Floor. Used for CSE/IT workshops and student seminars.\n- Seminar Hall 2 (Seating capacity: 150): Located in Block B, 3rd Floor. Used for ECE guest lectures.\n- Board Room (Seating capacity: 50): Located in the Administrative Block, 2nd Floor. Used for official faculty meetings.\nBooking of these spaces must be done 3 days in advance via the Admin Office.",
+    "metadata": {
+      "booking_notice_days": 3,
+      "auditorium_spaces": ["Main Auditorium", "Seminar Hall 1", "Seminar Hall 2", "Board Room"]
+    }
+  },
+  {
+    "id": "room_admin_offices_04",
+    "category": "rooms",
+    "title": "Administrative Offices and Student Help Desks",
+    "content": "Administrative offices handle student documentation, fees, scholarships, and academic records:\n- Registrar's Office: Administrative Block, Ground Floor. Timings: 10:00 AM - 4:00 PM. Ext: 101.\n- Dean of Student Affairs: Administrative Block, 1st Floor. Timings: 11:00 AM - 3:00 PM. Ext: 102.\n- Accounts & Fee Section: Administrative Block, Ground Floor. Timings: 10:00 AM - 3:00 PM. Ext: 103.\n- Academic Section (Grade sheets, transcripts): Administrative Block, 1st Floor. Timings: 10:00 AM - 4:30 PM. Ext: 104.\n- Health Center: Central Block, Ground Floor. Open 24/7 for medical emergencies. Ext: 911.",
+    "metadata": {
+      "admin_offices": ["Registrar's Office", "Dean of Student Affairs", "Accounts Section", "Academic Section", "Health Center"],
+      "health_center_hours": "24/7"
+    }
+  }
+]

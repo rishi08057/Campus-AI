@@ -141,37 +141,12 @@ async def create_chat_reply(
     # --------------------------------------------------
 
     try:
-        relevant_events = vector_service.search_events(
-            message,
-            n_results=3,
-        )
+        from ...agents.router import AgentRouter
 
-        if relevant_events:
-            event_context = (
-                "Relevant Events Found:\n"
-                + "\n".join(
-                    [
-                        f"- {event['content']} "
-                        f"(Date: {event['metadata']['datetime']})"
-                        for event in relevant_events
-                    ]
-                )
-            )
-        else:
-            event_context = (
-                "No specific events match the query perfectly, "
-                "but you can still help based on general knowledge "
-                "or state that no suitable event exists."
-            )
-
-        system_prompt = EVENT_AGENT_PROMPT.format(
-    event_context=event_context
-)
-
-        ai_reply = await generate_ai_response(
+        ai_reply = await AgentRouter.route(
+            agent_type=payload.agent_type,
             message=message,
             history=history_data,
-            system_prompt=system_prompt,
         )
 
         if not ai_reply:

@@ -1,0 +1,36 @@
+[
+  {
+    "id": "faculty_directory_01",
+    "category": "faculty",
+    "title": "Faculty Directory and Department Contacts",
+    "content": "CampusAI University comprises several departments with dedicated faculty members. The primary departments are:\n- Computer Science and Engineering (CSE): Contact at cse@campusai.edu, Ext: 401. Main office: Block A, Room 301.\n- Information Technology (IT): Contact at it@campusai.edu, Ext: 402. Main office: Block A, Room 305.\n- Electronics and Communication (ECE): Contact at ece@campusai.edu, Ext: 403. Main office: Block B, Room 201.\n- Mechanical Engineering (ME): Contact at me@campusai.edu, Ext: 404. Main office: Block C, Room 101.\nEach department has a dedicated admin desk available Monday to Friday from 9:00 AM to 5:00 PM.",
+    "metadata": {
+      "departments": ["CSE", "IT", "ECE", "ME"],
+      "office_hours": "Mon-Fri 9:00 AM - 5:00 PM"
+    }
+  },
+  {
+    "id": "faculty_office_hours_02",
+    "category": "faculty",
+    "title": "Faculty Office Hours and Consultations",
+    "content": "All professors maintain weekly office hours for student queries, project guidance, and doubts clarification. Students are encouraged to book appointments beforehand or visit during the designated hours:\n- Dr. Alan Turing (CSE HOD): Mon & Wed, 2:00 PM - 4:00 PM (Block A, Room 302)\n- Prof. Grace Hopper (CSE): Tue & Thu, 10:00 AM - 12:00 PM (Block A, Room 308)\n- Dr. Claude Shannon (ECE HOD): Wed & Fri, 1:00 PM - 3:00 PM (Block B, Room 202)\n- Prof. Ada Lovelace (IT HOD): Mon & Thu, 3:00 PM - 5:00 PM (Block A, Room 306)\nConsultation slots can also be scheduled online through the Faculty Scheduler tab on the student portal.",
+    "metadata": {
+      "booking_portal_tab": "Faculty Scheduler",
+      "faculty_list": ["Dr. Alan Turing", "Prof. Grace Hopper", "Dr. Claude Shannon", "Prof. Ada Lovelace"]
+    }
+  },
+  {
+    "id": "faculty_hod_info_03",
+    "category": "faculty",
+    "title": "Head of Department (HOD) Contact Information",
+    "content": "For administrative issues, course approvals, or special permissions, students should contact their respective HODs:\n- CSE HOD: Dr. Alan Turing, Email: cse_hod@campusai.edu, Office: Block A, Room 302, Extension: 411.\n- IT HOD: Prof. Ada Lovelace, Email: it_hod@campusai.edu, Office: Block A, Room 306, Extension: 412.\n- ECE HOD: Dr. Claude Shannon, Email: ece_hod@campusai.edu, Office: Block B, Room 202, Extension: 413.\n- ME HOD: Dr. James Watt, Email: me_hod@campusai.edu, Office: Block C, Room 102, Extension: 414.\nEnsure you have a formal request letter and relevant documents before meeting the HOD.",
+    "metadata": {
+      "hod_roles": {
+        "CSE": "Dr. Alan Turing",
+        "IT": "Prof. Ada Lovelace",
+        "ECE": "Dr. Claude Shannon",
+        "ME": "Dr. James Watt"
+      }
+    }
+  }
+]

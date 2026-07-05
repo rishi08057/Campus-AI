@@ -1,0 +1,58 @@
+[
+  {
+    "id": "exam_registration_01",
+    "category": "examinations",
+    "title": "Semester Exam Registration Process",
+    "content": "Students must register for their semester-end examinations through the CampusAI Examination Portal. Registration typically opens 30 days before the start of exams. Students must fill out the online form, select their regular and backlog courses, and pay the prescribed examination fee ($20 per regular course, $30 per backlog course) online. Registration is complete only after the fee payment confirmation receipt is generated.",
+    "metadata": {
+      "policy_code": "EXAM-REG-01",
+      "registration_window_days": 30,
+      "regular_fee": 20,
+      "backlog_fee": 30
+    }
+  },
+  {
+    "id": "exam_hall_ticket_02",
+    "category": "examinations",
+    "title": "Hall Ticket Generation and Verification",
+    "content": "Hall tickets (Admit Cards) are generated digitally and made available for download on the student portal 7 days prior to the commencement of the examinations. Hall tickets are only issued to students who: (1) have registered and paid the exam fee, (2) meet the minimum attendance requirement of 75% in the respective courses, and (3) have cleared all outstanding university financial and library dues. Students must print their hall tickets and carry them along with their official student ID card to the exam hall.",
+    "metadata": {
+      "policy_code": "EXAM-HT-02",
+      "release_days_before": 7,
+      "required_documents": ["printed hall ticket", "official student ID card"]
+    }
+  },
+  {
+    "id": "exam_supplementary_03",
+    "category": "examinations",
+    "title": "Supplementary Examinations",
+    "content": "Supplementary (makeup) examinations are conducted for students who failed (received an 'F' grade) in one or more courses in the regular semester, or who missed the exams due to approved medical emergencies. Supplementary exams are held within 15 to 20 days after the publication of regular semester results. Students must register and pay the supplementary exam fee of $35 per course within the announced registration window. A maximum of two attempts are allowed per course in supplementary mode.",
+    "metadata": {
+      "policy_code": "EXAM-SUPP-03",
+      "timeline_post_results_days": 15,
+      "fee": 35
+    }
+  },
+  {
+    "id": "exam_backlog_policy_04",
+    "category": "examinations",
+    "title": "Backlog and Course Prerequisite Policy",
+    "content": "A backlog is a course that a student registered for but did not pass (received 'F' grade). Students must clear all backlogs within a maximum duration of N+2 years, where N is the standard duration of the program (e.g., 6 years for a 4-year degree). If a backlog course is a prerequisite for an advanced course, the student cannot register for the advanced course until the prerequisite backlog course is successfully cleared.",
+    "metadata": {
+      "policy_code": "EXAM-BACKLOG",
+      "max_years_formula": "N + 2"
+    }
+  },
+  {
+    "id": "exam_grading_05",
+    "category": "examinations",
+    "title": "University Grading System",
+    "content": "CampusAI University follows a 10-point letter grading system. The grades and corresponding grade points are: A+ (Outstanding, 10 points), A (Excellent, 9 points), B+ (Very Good, 8 points), B (Good, 7 points), C (Fair, 6 points), D (Satisfactory, 5 points), E (Pass, 4 points), and F (Fail, 0 points). The Cumulative Grade Point Average (CGPA) is calculated at the end of each semester as the weighted average of the grade points earned in all courses.",
+    "metadata": {
+      "policy_code": "EXAM-GRADE-10PT",
+      "grading_scale": "10-point",
+      "pass_grade": "E",
+      "fail_grade": "F"
+    }
+  }
+]

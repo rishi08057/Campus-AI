@@ -75,6 +75,37 @@ try:
 except Exception as e:
     print(f"Warning: Could not index events: {e}")
 
+# --------------------------------------------------
+# Load Support Documents + Index into ChromaDB
+# --------------------------------------------------
+try:
+    import json
+    import os
+    from .services.support_vector_service import support_vector_service
+
+    support_dir = os.path.join(os.path.dirname(__file__), "data", "support")
+    support_docs = []
+
+    if os.path.exists(support_dir):
+        for filename in ["attendance.json", "exams.json", "faculty.json", "rooms.json"]:
+            filepath = os.path.join(support_dir, filename)
+            if os.path.exists(filepath):
+                with open(filepath, "r", encoding="utf-8") as f:
+                    docs = json.load(f)
+                    support_docs.extend(docs)
+        
+        if support_docs:
+            print(f"Found {len(support_docs)} support documents")
+            support_vector_service.index_documents(support_docs)
+            print(f"Indexed {len(support_docs)} support documents into ChromaDB")
+        else:
+            print("Warning: No support documents found in support JSON files.")
+    else:
+        print(f"Warning: Support data directory {support_dir} does not exist.")
+
+except Exception as e:
+    print(f"Warning: Could not index support documents: {e}")
+
 finally:
     try:
         db.close()

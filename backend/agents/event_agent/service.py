@@ -1,5 +1,5 @@
-from ...services.ai_service import generate_ai_response
-from ...services.vector_service import vector_service
+from ...services.event_chat_service import generate_ai_response
+from ...services.rag_service import vector_service
 from .prompt import EVENT_AGENT_PROMPT
 
 class EventAgentService:

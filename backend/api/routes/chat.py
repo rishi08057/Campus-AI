@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 import logging
 from sqlalchemy.orm import Session
-
+from ...agents.event_agent.prompt import EVENT_AGENT_PROMPT
 from ...schemas.chat import ChatRequest, ChatResponse
 from ...services.event_chat_service import generate_ai_response
 from ...database import get_db
@@ -164,7 +164,9 @@ async def create_chat_reply(
                 "or state that no suitable event exists."
             )
 
-        system_prompt = EVENT_AGENT_SYSTEM_PROMPT_TEMPLATE.format(event_context=event_context)
+        system_prompt = EVENT_AGENT_PROMPT.format(
+    event_context=event_context
+)
 
         ai_reply = await generate_ai_response(
             message=message,

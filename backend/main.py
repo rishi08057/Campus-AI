@@ -37,7 +37,7 @@ from .services.rag_service import vector_service
 Base.metadata.create_all(bind=engine)
 
 # --------------------------------------------------
-# Index PostgreSQL Events into ChromaDB
+# Load Events + Index into ChromaDB
 # --------------------------------------------------
 
 try:
@@ -45,9 +45,32 @@ try:
 
     events = db.query(Event).all()
 
-    if events:
-        vector_service.upsert_events(events)
-        print(f"Indexed {len(events)} events into ChromaDB")
+    if not events:
+        from .data.mock_events import MOCK_EVENTS
+
+        print("Database empty. Loading mock events...")
+
+        for event in MOCK_EVENTS:
+            db.add(
+                Event(
+                    id=event.id,
+                    title=event.title,
+                    description=event.description,
+                    venue=event.venue,
+                    category=event.category,
+                    datetime=event.datetime,
+                )
+            )
+
+        db.commit()
+
+        events = db.query(Event).all()
+
+    print(f"Found {len(events)} events")
+
+    vector_service.upsert_events(events)
+
+    print(f"Indexed {len(events)} events into ChromaDB")
 
 except Exception as e:
     print(f"Warning: Could not index events: {e}")

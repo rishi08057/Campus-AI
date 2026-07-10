@@ -10,6 +10,7 @@ export interface ChatRequest {
   message: string;
   history?: ChatMessage[];
   session_id?: string;
+  agent_type?: string;
 }
 
 export interface ChatSuccessResponse {

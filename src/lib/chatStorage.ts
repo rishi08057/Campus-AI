@@ -9,6 +9,7 @@ export interface ChatSession {
   messages: ChatMessage[];
   lastUpdated: number;
   title?: string;
+  agentType?: string;
 }
 
 /**
@@ -27,17 +28,24 @@ export function getSessionIds(): string[] {
 /**
  * Get all chat sessions.
  */
-export function getAllSessions(): ChatSession[] {
+export function getAllSessions(agentType?: string): ChatSession[] {
   if (typeof window === "undefined") return [];
   const ids = getSessionIds();
-  const sessions: ChatSession[] = [];
   
   try {
     const storedSessions = localStorage.getItem(SESSIONS_STORAGE_KEY);
     if (!storedSessions) return [];
     
     const allSessions = JSON.parse(storedSessions) as Record<string, ChatSession>;
-    return ids.map(id => allSessions[id]).filter(Boolean);
+    const loaded = ids.map(id => allSessions[id]).filter(Boolean);
+
+    if (agentType) {
+      return loaded.filter(session => {
+        const sessionAgentType = session.agentType || "event";
+        return sessionAgentType === agentType;
+      });
+    }
+    return loaded;
   } catch (error) {
     console.warn("Failed to load all sessions:", error);
     return [];
@@ -65,7 +73,7 @@ export function loadChatSession(id: string): ChatSession | null {
 /**
  * Save a chat session.
  */
-export function saveChatSession(id: string, messages: ChatMessage[], title?: string): void {
+export function saveChatSession(id: string, messages: ChatMessage[], title?: string, agentType?: string): void {
   if (typeof window === "undefined" || !id) return;
 
   try {
@@ -80,7 +88,8 @@ export function saveChatSession(id: string, messages: ChatMessage[], title?: str
       id,
       messages: truncated,
       lastUpdated: Date.now(),
-      title: title || existing?.title || (messages[0]?.content.substring(0, 30) + "...") || "New Chat"
+      title: title || existing?.title || (messages[0]?.content.substring(0, 30) + "...") || "New Chat",
+      agentType: agentType || existing?.agentType || "event"
     };
 
     allSessions[id] = session;

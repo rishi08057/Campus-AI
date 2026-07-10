@@ -18,7 +18,7 @@ export default function ChatPage() {
   useEffect(() => {
     setMounted(true);
 
-    const allSessions = getAllSessions();
+    const allSessions = getAllSessions("event");
     setSessions(allSessions);
 
     setSessionId(uuidv4());
@@ -41,7 +41,7 @@ export default function ChatPage() {
     if (window.confirm("Delete this chat?")) {
       deleteChatSession(id);
 
-      setSessions(getAllSessions());
+      setSessions(getAllSessions("event"));
 
       if (sessionId === id) {
         setSessionId(uuidv4());
@@ -50,7 +50,7 @@ export default function ChatPage() {
   };
 
   const refreshSessions = useCallback(() => {
-    setSessions(getAllSessions());
+    setSessions(getAllSessions("event"));
   }, []);
 
   if (!mounted) return null;
@@ -157,6 +157,7 @@ export default function ChatPage() {
               className="flex-1"
               sessionId={sessionId}
               onNewMessage={refreshSessions}
+              agentType="event"
             />
           </section>
         </main>

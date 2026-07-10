@@ -20,6 +20,11 @@ export type ChatBoxProps = {
   placeholder?: string;
   sessionId: string;
   onNewMessage?: () => void;
+  agentType?: string;
+  title?: string;
+  subtitle?: string;
+  quickActions?: { label: string; prompt: string }[];
+  emptySubtitle?: string;
 };
 
 function normalizeAssistantResponse(data: ChatSuccessResponse | string | null): NormalizedChatReply {
@@ -63,7 +68,17 @@ function readErrorMessage(error: unknown): string {
   return "Failed to send message";
 }
 
-export function ChatBox({ className = "", placeholder = "Write a message...", sessionId, onNewMessage }: ChatBoxProps) {
+export function ChatBox({
+  className = "",
+  placeholder = "Write a message...",
+  sessionId,
+  onNewMessage,
+  agentType,
+  title,
+  subtitle,
+  quickActions,
+  emptySubtitle,
+}: ChatBoxProps) {
   const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -86,10 +101,10 @@ export function ChatBox({ className = "", placeholder = "Write a message...", se
   // Save messages to localStorage whenever they change
   useEffect(() => {
     if (mounted && sessionId && messages.length > 0) {
-      saveChatSession(sessionId, messages);
+      saveChatSession(sessionId, messages, undefined, agentType);
       if (onNewMessage) onNewMessage();
     }
-  }, [messages, mounted, sessionId, onNewMessage]);
+  }, [messages, mounted, sessionId, onNewMessage, agentType]);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -98,8 +113,9 @@ export function ChatBox({ className = "", placeholder = "Write a message...", se
     }
   }, [messages, loading]);
 
-  async function handleSend() {
-    const trimmedInput = input.trim();
+  async function handleSend(customMessage?: string) {
+    const messageToSend = typeof customMessage === "string" ? customMessage : input;
+    const trimmedInput = messageToSend.trim();
 
     if (!trimmedInput || loading) {
       return;
@@ -111,13 +127,17 @@ export function ChatBox({ className = "", placeholder = "Write a message...", se
     const userMessage: ChatMessage = { role: "user", content: trimmedInput, timestamp };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
-    setInput("");
+    
+    if (typeof customMessage !== "string") {
+      setInput("");
+    }
 
     try {
       const payload: ChatRequest = {
         message: trimmedInput,
         history: updatedMessages,
         session_id: sessionId || undefined,
+        agent_type: agentType,
       };
       const res = await apiClient.post<ChatSuccessResponse | string>("/chat", payload);
       const normalizedReply = normalizeAssistantResponse(res.data);
@@ -161,10 +181,10 @@ export function ChatBox({ className = "", placeholder = "Write a message...", se
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-              Assistant
+              {subtitle || "Assistant"}
             </p>
             <h2 className="mt-0.5 truncate text-base font-semibold text-slate-950 sm:text-lg">
-              CampusAI Chat
+              {title || "CampusAI Chat"}
             </h2>
           </div>
 
@@ -193,7 +213,12 @@ export function ChatBox({ className = "", placeholder = "Write a message...", se
           className="flex-1 overflow-hidden"
         >
           <div className="flex h-full flex-col overflow-y-auto">
-            <ChatHistory messages={messages} />
+            <ChatHistory
+              messages={messages}
+              quickActions={quickActions}
+              onQuickAction={(prompt) => handleSend(prompt)}
+              emptySubtitle={emptySubtitle}
+            />
             {loading ? <TypingIndicator /> : null}
             <div ref={messagesEndRef} className="flex-shrink-0" />
           </div>

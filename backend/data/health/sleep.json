@@ -1,0 +1,20 @@
+[
+  {
+    "id": "health_sleep_01",
+    "category": "sleep",
+    "title": "Sleep Schedule & Sleep Hygiene Rules",
+    "content": "Consistency is key for a healthy sleep schedule. Go to bed and wake up at the same time every day, even on weekends. To practice good sleep hygiene, ensure your room is dark, quiet, and cool. Avoid screen time (phones, laptops) for at least 30-60 minutes before bed as blue light blocks melatonin production.",
+    "metadata": {
+      "topic": "sleep_hygiene"
+    }
+  },
+  {
+    "id": "health_sleep_02",
+    "category": "sleep",
+    "title": "Sleep Guidelines for Exam Weeks",
+    "content": "Pulling 'all-nighters' before exams can impair cognitive function, memory recall, and reaction times. Instead of cramming overnight, aim for at least 7-8 hours of sleep before an exam. Sleep allows your brain to consolidate information and process what you have studied, leading to better academic performance.",
+    "metadata": {
+      "topic": "exam_sleep"
+    }
+  }
+]

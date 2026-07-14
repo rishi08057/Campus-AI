@@ -1,6 +1,7 @@
 from .event_agent.service import EventAgentService
 from .support_agent.service import SupportAgentService
 from .placement_agent.service import PlacementAgentService
+from .health_agent.service import HealthAgentService
 
 class AgentRouter:
     """
@@ -17,6 +18,8 @@ class AgentRouter:
             return await SupportAgentService.get_response(message, history)
         elif agent_type == "placement":
             return await PlacementAgentService.get_response(message, history)
+        elif agent_type == "health":
+            return await HealthAgentService.get_response(message, history)
         
         # Default to Event Agent
         return await EventAgentService.get_response(message, history)

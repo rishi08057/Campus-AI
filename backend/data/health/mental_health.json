@@ -1,0 +1,29 @@
+[
+  {
+    "id": "health_mental_01",
+    "category": "mental_health",
+    "title": "Academic Stress Management & Coping",
+    "content": "Academic stress is common among university students. Manage stress by practicing time management (e.g. prioritizing tasks with a Eisenhower matrix) and deep breathing exercises (like box breathing: inhale for 4 seconds, hold for 4, exhale for 4, hold for 4). If you feel overwhelmed, break large tasks into smaller, manageable chunks.",
+    "metadata": {
+      "topic": "stress_management"
+    }
+  },
+  {
+    "id": "health_mental_02",
+    "category": "mental_health",
+    "title": "Anxiety Coping Strategies",
+    "content": "When dealing with anxiety, use grounding techniques like the 5-4-3-2-1 method: identify 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1 you can taste. This shifts focus away from anxious thoughts back to the present moment.",
+    "metadata": {
+      "topic": "anxiety_coping"
+    }
+  },
+  {
+    "id": "health_mental_03",
+    "category": "mental_health",
+    "title": "Mindfulness and Breathing Techniques",
+    "content": "Mindfulness involves paying attention to the present moment without judgment. Regular practice, even for 5 minutes a day, reduces stress and improves memory. Close your eyes, focus entirely on your natural breathing, and gently redirect your focus whenever your mind starts to wander.",
+    "metadata": {
+      "topic": "mindfulness"
+    }
+  }
+]

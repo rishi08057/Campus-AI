@@ -1,0 +1,20 @@
+[
+  {
+    "id": "health_emergency_01",
+    "category": "emergency",
+    "title": "When to Seek Immediate Emergency Medical Care",
+    "content": "Students should immediately seek professional emergency medical care or call 911 (or campus emergency Ext: 911) if they experience any of the following serious symptoms: difficulty breathing or severe shortness of breath, persistent chest pain or pressure, sudden weakness or numbness on one side of the body, severe abdominal pain, high fever accompanied by a stiff neck, sudden confusion, or severe bleeding that won't stop.",
+    "metadata": {
+      "topic": "emergency_triggers"
+    }
+  },
+  {
+    "id": "health_emergency_02",
+    "category": "emergency",
+    "title": "First Aid and Immediate Health Crises",
+    "content": "In case of a health crisis or emergency, call campus security or the 24/7 medical line (Ext: 911) immediately. While waiting for emergency responders, stay calm, keep the patient comfortable and still, do not give them anything to eat or drink, and do not attempt to move someone with a suspected neck or back injury unless they are in immediate danger.",
+    "metadata": {
+      "topic": "first_aid"
+    }
+  }
+]

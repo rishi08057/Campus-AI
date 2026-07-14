@@ -1,0 +1,22 @@
+[
+  {
+    "id": "health_wellness_01",
+    "category": "wellness",
+    "title": "Healthy Student Habits & Lifestyle",
+    "content": "Maintaining a healthy lifestyle as a university student involves balancing academics, social life, and self-care. Focus on consistent hydration (aiming for 2-3 liters of water daily), taking frequent study breaks using the Pomodoro technique (5-minute break every 25 minutes of work), and spending at least 15-20 minutes daily outdoors or in green spaces to reduce fatigue.",
+    "metadata": {
+      "topic": "student_habits",
+      "tips": ["hydration", "breaks", "outdoors"]
+    }
+  },
+  {
+    "id": "health_wellness_02",
+    "category": "wellness",
+    "title": "General Wellness Resources",
+    "content": "Wellness is a proactive approach to physical, mental, and social well-being. Students are encouraged to use the wellness center facilities, join mindfulness circles, and attend wellness workshops organized by the Campus Wellness Club every Tuesday at the Central Block auditorium.",
+    "metadata": {
+      "topic": "wellness_events",
+      "location": "Central Block"
+    }
+  }
+]

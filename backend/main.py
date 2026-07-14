@@ -137,6 +137,37 @@ try:
 except Exception as e:
     print(f"Warning: Could not index placement documents: {e}")
 
+# --------------------------------------------------
+# Load Health Documents + Index into ChromaDB
+# --------------------------------------------------
+try:
+    import json
+    import os
+    from .services.health_vector_service import health_vector_service
+
+    health_dir = os.path.join(os.path.dirname(__file__), "data", "health")
+    health_docs = []
+
+    if os.path.exists(health_dir):
+        for filename in ["wellness.json", "nutrition.json", "exercise.json", "mental_health.json", "sleep.json", "campus_health.json", "emergency.json"]:
+            filepath = os.path.join(health_dir, filename)
+            if os.path.exists(filepath):
+                with open(filepath, "r", encoding="utf-8") as f:
+                    docs = json.load(f)
+                    health_docs.extend(docs)
+        
+        if health_docs:
+            print(f"Found {len(health_docs)} health documents")
+            health_vector_service.index_documents(health_docs)
+            print(f"Indexed {len(health_docs)} health documents into ChromaDB")
+        else:
+            print("Warning: No health documents found in health JSON files.")
+    else:
+        print(f"Warning: Health data directory {health_dir} does not exist.")
+
+except Exception as e:
+    print(f"Warning: Could not index health documents: {e}")
+
 finally:
     try:
         db.close()

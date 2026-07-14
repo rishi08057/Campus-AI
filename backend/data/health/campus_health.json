@@ -1,0 +1,31 @@
+[
+  {
+    "id": "health_campus_01",
+    "category": "campus_health",
+    "title": "Student Health Clinic Services",
+    "content": "The Campus Student Health Clinic is located in the Central Block, Ground Floor. It provides free primary care, immunizations, basic first aid, and standard consultations for all enrolled students. The clinic is open Monday to Friday from 9:00 AM to 5:00 PM. No appointment is needed for walk-in triage, but scheduling is recommended for routine checkups.",
+    "metadata": {
+      "topic": "student_clinic",
+      "location": "Central Block, Ground Floor"
+    }
+  },
+  {
+    "id": "health_campus_02",
+    "category": "campus_health",
+    "title": "Campus Counselling and Psychological Services",
+    "content": "The Campus Counselling Center is situated in the Administrative Block, 2nd Floor. Licensed counselors offer free, confidential individual sessions, support groups, and mental health resources to help students cope with academic pressure, relationships, or personal challenges. Appointments can be booked online or via phone extension 108.",
+    "metadata": {
+      "topic": "counselling_center",
+      "location": "Administrative Block, 2nd Floor"
+    }
+  },
+  {
+    "id": "health_campus_03",
+    "category": "campus_health",
+    "title": "Campus Health Contacts & Details",
+    "content": "Campus Health Services contact directory:\n- Main Clinic Desk: Ext 107\n- Counselling Center: Ext 108\n- Emergency Medical Services (24/7): Ext 911 (Located in Central Block, Ground Floor, open 24/7 for medical emergencies).",
+    "metadata": {
+      "topic": "health_contacts"
+    }
+  }
+]

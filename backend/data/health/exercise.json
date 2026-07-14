@@ -1,0 +1,29 @@
+[
+  {
+    "id": "health_exercise_01",
+    "category": "exercise",
+    "title": "Beginner Dorm Workouts & Movement",
+    "content": "Staying active on campus doesn't require a complex gym routine. Beginners can start with bodyweight exercises in their dorm room, such as bodyweight squats, lunges, wall push-ups, and planks. Aim for 150 minutes of moderate-intensity aerobic physical activity per week, which can be broken down into 30 minutes, 5 days a week.",
+    "metadata": {
+      "topic": "dorm_workouts"
+    }
+  },
+  {
+    "id": "health_exercise_02",
+    "category": "exercise",
+    "title": "Stretching, Posture, and Desk Ergonomics",
+    "content": "Prolonged sitting during study sessions can lead to neck pain, lower back tension, and poor posture. Keep your computer screen at eye level and sit with your feet flat on the floor. Take short stretching breaks every hour: roll your shoulders, stretch your chest, and stretch your hamstrings. This increases blood flow and relieves muscle tightness.",
+    "metadata": {
+      "topic": "stretching_ergonomics"
+    }
+  },
+  {
+    "id": "health_exercise_03",
+    "category": "exercise",
+    "title": "Walking and Staying Active on Campus",
+    "content": "One of the easiest ways to meet daily exercise goals is walking. Choose the stairs instead of the elevator, walk or cycle to lectures, and take walking meetings or study breaks. Walking outdoors also clears your mind and improves mental clarity.",
+    "metadata": {
+      "topic": "walking"
+    }
+  }
+]

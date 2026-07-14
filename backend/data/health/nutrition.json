@@ -1,0 +1,29 @@
+[
+  {
+    "id": "health_nutrition_01",
+    "category": "nutrition",
+    "title": "Balanced Meal Planning for Students",
+    "content": "A balanced meal for college students should include complex carbohydrates (like brown rice, oats, or whole-wheat bread) for sustained energy, lean proteins (beans, tofu, eggs, or chicken) for muscle maintenance, and healthy fats (nuts, seeds, olive oil). Try to fill half your plate with colorful vegetables and fruits to ensure adequate vitamin and mineral intake.",
+    "metadata": {
+      "topic": "balanced_meals"
+    }
+  },
+  {
+    "id": "health_nutrition_02",
+    "category": "nutrition",
+    "title": "Hydration and Healthy Snacking",
+    "content": "Dehydration can lead to fatigue, headaches, and poor concentration. Keep a reusable water bottle handy and sip water throughout lectures. For study snacks, avoid high-sugar energy drinks and processed snacks. Opt instead for nuts, seeds, fresh fruit, yogurt, or roasted chickpeas which provide stable, long-lasting energy.",
+    "metadata": {
+      "topic": "snacking_hydration"
+    }
+  },
+  {
+    "id": "health_nutrition_03",
+    "category": "nutrition",
+    "title": "Nutrition Tips During Exam Week",
+    "content": "During exams, prioritize foods rich in omega-3 fatty acids (like walnuts and flaxseeds) and antioxidants (berries, dark leafy greens) to support brain function. Avoid excessive caffeine intake; limit coffee or energy drinks in the afternoon to prevent sleep disruption. Eat small, frequent meals rather than large heavy meals that cause sluggishness.",
+    "metadata": {
+      "topic": "exam_nutrition"
+    }
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "placement_company_techcorp",
+    "category": "companies",
+    "title": "TechCorp Recruitment Profile",
+    "content": "TechCorp recruits Software Engineer Interns and Full-Time Employees (FTE) annually. Eligibility: BE/BTech/MCA in CSE, ISE, ECE. The CGPA criteria requires a minimum of 8.0/10.0 with no active backlogs. The recruitment timeline starts in August, with hiring completed by September. The package offered is $180,000 (18 LPA) for FTE and $4,000/month (40k/month stipend) for internships. The hiring process consists of 4 rounds: 1. Online Coding Assessment (2 DSA problems, 60 mins), 2. Technical Interview Round 1 (DSA and Core CS subjects like OS and DBMS), 3. Technical Interview Round 2 (System Design and Projects), and 4. HR Interview (Behavioral and Cultural fit).",
+    "metadata": {
+      "company": "TechCorp",
+      "cgpa_cutoff": 8.0,
+      "package_lpa": 18,
+      "stipend_k": 40
+    }
+  },
+  {
+    "id": "placement_company_innovate",
+    "category": "companies",
+    "title": "Innovate Labs AI/ML Engineer Profile",
+    "content": "Innovate Labs hires AI/ML Engineers and Data Science Interns. Eligibility: BTech/MTech/MS in Data Science, AI, CSE. The CGPA criteria requires a minimum of 8.5/10.0. The recruitment timeline is September-October. The package offered is $250,000 (25 LPA) for FTE and $6,000/month (60k/month stipend) for a 6-month internship. The recruitment process includes: 1. Machine Learning & Coding Online Quiz, 2. Technical Interview (Math, statistics, machine learning algorithms, deep learning, PyTorch/TensorFlow), and 3. HR/Managerial Round. Interns have high pre-placement offer (PPO) conversion rates based on performance.",
+    "metadata": {
+      "company": "Innovate Labs",
+      "cgpa_cutoff": 8.5,
+      "package_lpa": 25,
+      "stipend_k": 60
+    }
+  },
+  {
+    "id": "placement_company_globalconsult",
+    "category": "companies",
+    "title": "GlobalConsult Analyst Profile",
+    "content": "GlobalConsult recruits Technology Analysts and Business Consultants. Eligibility: Open to all engineering branches (BTech/BE/Dual Degree). The CGPA criteria requires a minimum of 7.0/10.0. The recruitment timeline is October-November. The package offered is $120,000 (12 LPA). The recruitment process involves: 1. Quantitative Aptitude and Logical Reasoning Online Test, 2. Group Case Study Discussion (evaluating communication and structured thinking), and 3. Technical & Case Interview (business case analysis, basic SQL, and puzzle solving), 4. HR Interview.",
+    "metadata": {
+      "company": "GlobalConsult",
+      "cgpa_cutoff": 7.0,
+      "package_lpa": 12,
+      "stipend_k": 0
+    }
+  },
+  {
+    "id": "placement_company_fintech",
+    "category": "companies",
+    "title": "FinTech Solutions Backend Engineer Profile",
+    "content": "FinTech Solutions hires Junior Software Engineers. Eligibility: BTech/MTech in CSE, IT, ECE. The CGPA criteria requires a minimum of 7.5/10.0. The recruitment timeline begins in late August. The package offered is $150,000 (15 LPA). The hiring process is 4 rounds: 1. Online coding round (DSA & SQL), 2. Technical Interview 1 (Advanced Data Structures, Algorithms), 3. Technical Interview 2 (Databases, High-Level/Low-Level Design, API design), and 4. HR and Fitment Round. Candidates must showcase knowledge in Java/Go/Python.",
+    "metadata": {
+      "company": "FinTech Solutions",
+      "cgpa_cutoff": 7.5,
+      "package_lpa": 15,
+      "stipend_k": 0
+    }
+  }
+]

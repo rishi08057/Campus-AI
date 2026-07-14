@@ -1,0 +1,43 @@
+[
+  {
+    "id": "placement_resume_ats",
+    "category": "resume",
+    "title": "ATS Optimization Guide",
+    "content": "Applicant Tracking Systems (ATS) scan resumes for keywords and formatting before human recruiters see them. To optimize your resume for ATS: 1. Use standard, editable document layouts (single-column format is strongly preferred over double-column). 2. Use simple fonts like Arial, Calibri, or Times New Roman, and avoid custom graphic elements or tables inside which text can get trapped. 3. Match resume keywords to the job description (e.g. specific programming languages, frameworks, and methodologies). 4. Use standard headings such as 'Work Experience', 'Education', 'Projects', and 'Skills' so parsers index information correctly.",
+    "metadata": {
+      "focus": "Single-column format, Keywords, Standard headings",
+      "tooling": "ATS parsers"
+    }
+  },
+  {
+    "id": "placement_resume_formatting",
+    "category": "resume",
+    "title": "Formatting and Layout Guidelines",
+    "content": "A student resume should ideally fit on a single page. Keep margins consistent (0.5 to 1 inch). Use bullet points instead of long paragraphs, starting each bullet with an active action verb (e.g., 'Designed', 'Engineered', 'Optimized', 'Led'). List experience and education in reverse chronological order (most recent first). Organize sections cleanly with clear font size hierarchies (e.g., Name: 20pt, Section Headings: 14pt, Body: 10-11pt). Save and submit the resume strictly in PDF format unless requested otherwise.",
+    "metadata": {
+      "length": "1 page",
+      "format": "PDF",
+      "style": "Reverse chronological"
+    }
+  },
+  {
+    "id": "placement_resume_projects_achievements",
+    "category": "resume",
+    "title": "Showcasing Projects and Achievements",
+    "content": "When listing projects on a resume, use the formula: 'Accomplished [X] as measured by [Y], by doing [Z]'. Highlight the specific technologies used in each project (e.g. React, Node.js, PostgreSQL). Quantify your results and achievements whenever possible (e.g., 'reduced API response time by 40%,' 'secured 2nd place out of 100 teams in national hackathon'). Include GitHub and live deployment links for your projects. In the achievements section, list scholarships, coding contest ranks (e.g., LeetCode contest rating, Codeforces maximum rating), and academic honors.",
+    "metadata": {
+      "formula": "Google X-Y-Z formula",
+      "details": "Quantifiable results, links"
+    }
+  },
+  {
+    "id": "placement_resume_mistakes",
+    "category": "resume",
+    "title": "Common Resume Mistakes to Avoid",
+    "content": "Avoid these critical errors on your resume: 1. Spelling and grammatical mistakes (always proofread or use tools like Grammarly). 2. Providing generic summaries or list of duties instead of actual achievements. 3. Listing skills or technologies you cannot explain or have only used once (you must be able to discuss everything on your resume in detail). 4. Including irrelevant personal information like marital status, photos (unless specified for local norms), and detailed high school projects. 5. Using non-professional email addresses or broken links.",
+    "metadata": {
+      "errors": "Grammar, generic duties, overstating skills",
+      "check": "Proofreading, link verification"
+    }
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "id": "placement_career_software_roles",
+    "category": "career",
+    "title": "Software Engineering Roles Overview",
+    "content": "Software engineering encompasses various career paths. 1. Frontend Developer: builds user interfaces (React, Vue, HTML/CSS/JS). 2. Backend Developer: builds server logic, APIs, and database structures (Python, Node.js, Java, Go, SQL/NoSQL). 3. Full Stack Developer: combines frontend and backend expertise. 4. Systems/Site Reliability Engineer (SRE): ensures infrastructure reliability, scalability, and CI/CD automation (Linux, AWS/GCP, Docker, Kubernetes). Select your focus early and build 2-3 deep, end-to-end projects.",
+    "metadata": {
+      "roles": "Frontend, Backend, Full Stack, SRE/DevOps",
+      "core_skills": "Programming, Databases, Web Technologies"
+    }
+  },
+  {
+    "id": "placement_career_ai_ml_data",
+    "category": "career",
+    "title": "AI/ML and Data Science Pathways",
+    "content": "Careers in AI/ML and Data Science are highly technical. Key roles: 1. Machine Learning Engineer: designs, builds, and deploys ML models. Requires strong Python, math (linear algebra, calculus), probability, statistics, and libraries like PyTorch/TensorFlow. 2. Data Scientist: extracts insights from data to guide business decisions. Requires SQL, pandas, machine learning, and visualization tools. 3. Data Engineer: builds pipelines and data architectures. Requires SQL, spark, and cloud data warehouses. Having a GitHub repository with clean notebooks and model deployment examples is essential.",
+    "metadata": {
+      "roles": "ML Engineer, Data Scientist, Data Engineer",
+      "core_skills": "Python, Statistics, PyTorch, SQL"
+    }
+  },
+  {
+    "id": "placement_career_cybersecurity",
+    "category": "career",
+    "title": "Cybersecurity Career Path",
+    "content": "Cybersecurity focuses on protecting systems, networks, and data. Key entry-level roles: 1. Security Analyst: monitors and responds to security incidents. 2. Penetration Tester (Ethical Hacker): scans for and exploits vulnerabilities. Required skills: solid understanding of Computer Networks (TCP/IP), Linux command line, cryptography, script programming (Bash, Python), and web application security (OWASP Top 10). Helpful certifications: CompTIA Security+, CEH (Certified Ethical Hacker), and OSCP.",
+    "metadata": {
+      "roles": "Security Analyst, Penetration Tester",
+      "certifications": "Security+, CEH, OSCP"
+    }
+  },
+  {
+    "id": "placement_career_pm",
+    "category": "career",
+    "title": "Product Management (PM) Guide",
+    "content": "Product Managers bridge the gap between engineering, design, and business. Associate Product Manager (APM) programs target fresh graduates. Required skills: product sense (analyzing what makes products good/bad), user empathy, metrics (A/B testing, user acquisition), wireframing/prototyping, and communication. APM interviews feature product design questions ('Design a vacuum cleaner for the blind'), product metrics questions ('Google Maps usage dropped by 10%, what do you do?'), and estimation puzzles.",
+    "metadata": {
+      "roles": "APM, Product Analyst",
+      "skills": "Product sense, Analytics, Communication"
+    }
+  },
+  {
+    "id": "placement_career_higher_studies",
+    "category": "career",
+    "title": "Higher Studies (MS, MTech, MBA, PhD) Guide",
+    "content": "Higher studies options for engineering graduates: 1. MS/PhD abroad: requires preparing for GRE and TOEFL/IELTS, obtaining letters of recommendation (LORs) from professors, and writing a Statement of Purpose (SOP). Timelines start 1 year prior to intake (August-December for Fall). 2. MTech in India: requires cracking the GATE examination. Placements after MTech at top institutes (IITs, IISc, NITs) offer premium R&D and core roles. 3. MBA: requires CAT (India) or GMAT (abroad) for management roles.",
+    "metadata": {
+      "options": "MS, MTech, MBA, PhD",
+      "exams": "GRE, TOEFL, GATE, CAT, GMAT"
+    }
+  }
+]

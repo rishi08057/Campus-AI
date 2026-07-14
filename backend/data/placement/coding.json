@@ -1,0 +1,42 @@
+[
+  {
+    "id": "placement_coding_dsa_roadmap",
+    "category": "coding",
+    "title": "Data Structures and Algorithms Roadmap",
+    "content": "A structured path to master DSA for placements: 1. Pick a language (C++, Java, or Python) and learn its standard library (STL/Collection/Containers). 2. Master basic structures: Arrays, Strings, Hashing, Two Pointers, and Sliding Window. 3. Study Linear Data Structures: Linked Lists, Stacks, and Queues. 4. Learn Recursion and Backtracking. 5. Master Non-Linear structures: Trees (Binary Trees, BST, Heaps) and Graphs (BFS, DFS, Dijkstra). 6. Advance to Dynamic Programming (1D, 2D) and Greedy Algorithms. 7. Practice time and space complexity analysis for every solution.",
+    "metadata": {
+      "languages": "C++, Java, Python",
+      "level": "Beginner to Advanced"
+    }
+  },
+  {
+    "id": "placement_coding_leetcode",
+    "category": "coding",
+    "title": "LeetCode Topics and Essential Lists",
+    "content": "Focus on high-frequency LeetCode topics and curated lists to optimize preparation. The 'Blind 75' and 'NeetCode 150' lists are highly recommended for covering essential concepts. Key topics to practice: Arrays & Hashing (Easy/Medium), Two Pointers (Easy/Medium), Sliding Window (Medium), Stack (Easy/Medium), Binary Search (Medium), Linked List (Easy/Medium), Trees (Medium), Tries (Medium), Heap/Priority Queue (Medium/Hard), Backtracking (Medium), Graphs (Medium/Hard), 1-D & 2-D Dynamic Programming (Medium/Hard), and Bit Manipulation (Easy/Medium). Target solving around 200-300 balanced problems.",
+    "metadata": {
+      "curations": "Blind 75, NeetCode 150",
+      "target_count": "200-300 problems"
+    }
+  },
+  {
+    "id": "placement_coding_interview_prep",
+    "category": "coding",
+    "title": "Coding Interview Preparation Strategy",
+    "content": "Succeeding in coding interviews requires more than just solving problems. During preparation: 1. Simulate interview conditions by using a timer (30-45 mins per medium problem) and coding without an IDE/autocompletion. 2. Practice mock interviews on platforms like Pramp or with peers. 3. Master the 'think-aloud' technique: explain your thoughts, approach, and trade-offs to the interviewer before writing code. 4. Always clarify constraints (e.g., input size, memory limits) and edge cases (e.g., empty arrays, negative numbers, overflow) first.",
+    "metadata": {
+      "techniques": "Think-aloud, Mock interviews, Constraints check",
+      "duration_mins": 45
+    }
+  },
+  {
+    "id": "placement_coding_cp",
+    "category": "coding",
+    "title": "Competitive Programming (CP) Guide",
+    "content": "Competitive Programming builds speed, accuracy, and algorithmic depth. Popular platforms include Codeforces, CodeChef, and AtCoder. Focus on rating milestones (e.g., reaching Pupil/Specialist on Codeforces or 3/4-star on CodeChef). Important CP topics: Number Theory (Modular Arithmetic, GCD, Sieve of Eratosthenes), Combinatorics, Segment Trees, Fenwick Trees, Disjoint Set Union (DSU), and Bitmasking. CP is excellent for passing tough initial online assessments (OAs) of high-paying product companies.",
+    "metadata": {
+      "platforms": "Codeforces, CodeChef, AtCoder",
+      "advanced_topics": "Segment Trees, Fenwick Trees, DSU"
+    }
+  }
+]

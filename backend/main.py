@@ -106,6 +106,37 @@ try:
 except Exception as e:
     print(f"Warning: Could not index support documents: {e}")
 
+# --------------------------------------------------
+# Load Placement Documents + Index into ChromaDB
+# --------------------------------------------------
+try:
+    import json
+    import os
+    from .services.placement_vector_service import placement_vector_service
+
+    placement_dir = os.path.join(os.path.dirname(__file__), "data", "placement")
+    placement_docs = []
+
+    if os.path.exists(placement_dir):
+        for filename in ["companies.json", "interviews.json", "resume.json", "coding.json", "aptitude.json", "career.json"]:
+            filepath = os.path.join(placement_dir, filename)
+            if os.path.exists(filepath):
+                with open(filepath, "r", encoding="utf-8") as f:
+                    docs = json.load(f)
+                    placement_docs.extend(docs)
+        
+        if placement_docs:
+            print(f"Found {len(placement_docs)} placement documents")
+            placement_vector_service.index_documents(placement_docs)
+            print(f"Indexed {len(placement_docs)} placement documents into ChromaDB")
+        else:
+            print("Warning: No placement documents found in placement JSON files.")
+    else:
+        print(f"Warning: Placement data directory {placement_dir} does not exist.")
+
+except Exception as e:
+    print(f"Warning: Could not index placement documents: {e}")
+
 finally:
     try:
         db.close()

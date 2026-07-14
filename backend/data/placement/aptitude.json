@@ -1,0 +1,32 @@
+[
+  {
+    "id": "placement_aptitude_quant",
+    "category": "aptitude",
+    "title": "Quantitative Aptitude Preparation",
+    "content": "Quantitative Aptitude tests mathematical and numerical ability. Key topics to study: 1. Arithmetic: Percentages, Profit and Loss, Ratio and Proportion, Time and Work, Speed-Time-Distance, and Simple/Compound Interest. 2. Algebra and Number System: HCF, LCM, Divisibility Rules, and Progressions (AP/GP). 3. Modern Math: Permutations and Combinations, Probability, and Set Theory. 4. Data Interpretation: Bar charts, Pie charts, Line graphs, and Tables. Practice short-cut methods and speed calculation techniques to manage time effectively.",
+    "metadata": {
+      "focus": "Arithmetic, Algebra, Modern Math, Data Interpretation",
+      "speed_techniques": "Short-cuts, estimation"
+    }
+  },
+  {
+    "id": "placement_aptitude_logical",
+    "category": "aptitude",
+    "title": "Logical Reasoning Preparation",
+    "content": "Logical Reasoning tests analytical, critical, and deductive thinking. Essential topics to cover: 1. Arrangements: Linear, Circular, and Matrix arrangements. 2. Puzzles: Seating plans, scheduling, and comparison puzzles. 3. Clues & Codes: Coding-decoding, Blood Relations, Direction Sense, and Syllogisms. 4. Critical Reasoning: Statement-Assumption, Statement-Course of Action, and Cause-Effect. Practicing past papers of companies like TCS, Cognizant, Infosys, and Accenture helps in understanding question patterns.",
+    "metadata": {
+      "focus": "Arrangements, Puzzles, Blood relations, Syllogisms",
+      "evaluates": "Analytical skills"
+    }
+  },
+  {
+    "id": "placement_aptitude_verbal",
+    "category": "aptitude",
+    "title": "Verbal Ability Preparation",
+    "content": "Verbal Ability tests English grammar, comprehension, and vocabulary. Standard components of the assessment: 1. Reading Comprehension: Answering questions based on passage analysis, tone, and theme. 2. Grammar: Sentence correction, spotting errors (subject-verb agreement, tenses, prepositions), and sentence completion (fill in the blanks). 3. Vocabulary: Synonyms, antonyms, idioms, phrases, and one-word substitutions. Daily reading (news articles, editorials) and solving grammar practice questions are recommended.",
+    "metadata": {
+      "focus": "Comprehension, Grammar, Vocabulary",
+      "evaluates": "Language proficiency"
+    }
+  }
+]

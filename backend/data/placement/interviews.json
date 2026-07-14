@@ -1,0 +1,42 @@
+[
+  {
+    "id": "placement_interview_technical",
+    "category": "interviews",
+    "title": "Technical Interview Preparation",
+    "content": "Technical interviews evaluate core CS fundamentals and problem-solving skills. Standard topics include Data Structures and Algorithms (DSA), Object-Oriented Programming (OOP), Database Management Systems (DBMS), Operating Systems (OS), and Computer Networks (CN). Candidates should practice dry-running their code, explaining their logic while writing, and analyzing the time and space complexity (Big O notation) of their solutions. A deep understanding of projects listed on the resume is critical, including the architecture, technologies chosen, challenges faced, and how they were solved.",
+    "metadata": {
+      "focus": "CS Fundamentals, DSA, System Design, Projects",
+      "difficulty": "Medium-High"
+    }
+  },
+  {
+    "id": "placement_interview_behavioral",
+    "category": "interviews",
+    "title": "Behavioral Interview Preparation and STAR Method",
+    "content": "Behavioral interviews assess cultural fit, leadership qualities, teamwork, and conflict resolution using past experiences. The STAR method is highly recommended: Situation (set the scene), Task (describe your responsibility), Action (explain what you did), and Result (share the outcomes/metrics). Common questions include: 'Tell me about a time you had a conflict with a team member,' 'Describe a challenging project and how you handled it,' and 'Give an example of a time you failed and what you learned.' Prepare 3-4 professional stories that can adapt to different behavioral queries.",
+    "metadata": {
+      "methodology": "STAR",
+      "key_competencies": "Teamwork, Problem-solving, Adaptability, Leadership"
+    }
+  },
+  {
+    "id": "placement_interview_hr",
+    "category": "interviews",
+    "title": "HR Interview and Common Questions Guide",
+    "content": "The HR interview is the final step where communication, salary expectations, career goals, and cultural alignment are evaluated. Typical questions include: 'Tell me about yourself,' 'Why do you want to join our company?', 'Where do you see yourself in 5 years?', and 'What are your strengths and weaknesses?'. Answers should be positive, aligned with the company's core values, and concise. Dress professionally (business casual/formal), maintain good posture, show enthusiasm, and research the company beforehand to ask 1-2 thoughtful questions at the end.",
+    "metadata": {
+      "focus": "Communication, Culture, Career goals",
+      "etiquette": "Formal dress, punctuality, research"
+    }
+  },
+  {
+    "id": "placement_interview_gd",
+    "category": "interviews",
+    "title": "Group Discussion (GD) Guidelines",
+    "content": "Group Discussions evaluate communication, team collaboration, critical thinking, and structured thought processes. Key rules for success: 1. Initiate if you have solid knowledge on the topic, but do not dominate. 2. If not initiating, enter early (within the first 2-3 minutes) with a relevant point. 3. Listen actively and build on others' points rather than contradicting aggressively. 4. Back up arguments with structured reasoning or facts. 5. Avoid shouting or interrupting; maintain polite body language and eye contact. 6. Summarize or conclude the discussion if the opportunity arises.",
+    "metadata": {
+      "criteria": "Articulation, Active listening, Collaboration",
+      "strategy": "Structured entry, active listening"
+    }
+  }
+]

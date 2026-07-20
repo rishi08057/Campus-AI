@@ -6,6 +6,7 @@ from sqlalchemy import (
     ForeignKey,
     Text,
     UniqueConstraint,
+    Boolean,
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
@@ -24,6 +25,7 @@ class User(Base):
     department = Column(String)
     year = Column(String)
     interests = Column(Text)
+    is_admin = Column(Boolean, default=False)
 
     created_at = Column(
         DateTime,
@@ -149,7 +151,7 @@ class Ticket(Base):
 
     qr_code_url = Column(String)
 
-    is_checked_in = Column(Integer, default=0)  # 0 = false, 1 = true
+    is_checked_in = Column(Boolean, default=False)
     check_in_time = Column(DateTime, nullable=True)
 
     created_at = Column(

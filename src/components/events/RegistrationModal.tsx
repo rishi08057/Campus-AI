@@ -28,7 +28,7 @@ export function RegistrationModal({
   const handleRegister = async () => {
     setStatus("loading");
     try {
-      const response = await registerForEvent({ userId: 0, eventId });
+      const response = await registerForEvent({ eventId });
       if (response.success) {
         setStatus("success");
         setMessage(response.message);

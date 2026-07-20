@@ -24,9 +24,11 @@ router = APIRouter(prefix="/events", tags=["events"])
 
 @router.get("", response_model=list[Event])
 def read_events(
+    skip: int = 0,
+    limit: int = 50,
     db: Session = Depends(get_db),
-):
-    return db.query(DBEvent).all()
+) -> list[Event]:
+    return db.query(DBEvent).offset(skip).limit(limit).all()
 
 
 @router.post("/register", response_model=EventRegistrationResponse)

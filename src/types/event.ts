@@ -8,7 +8,7 @@ export interface Event {
 }
 
 export interface EventRegistration {
-  userId: number;
+  userId?: number;
   eventId: number;
 }
 
@@ -19,7 +19,7 @@ export interface EventRegistrationResponse {
 }
 
 export interface EventSave {
-  userId: number;
+  userId?: number;
   eventId: number;
 }
 

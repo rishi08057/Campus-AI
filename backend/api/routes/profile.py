@@ -15,7 +15,7 @@ def get_profile(current_user: User = Depends(get_current_user)) -> UserProfile:
     return UserProfile(
         id=current_user.id,
         name=current_user.name or "User",
-        department="Computer Science",  # Default for now
-        year="Junior (3rd Year)",       # Default for now
-        interests=["Artificial Intelligence", "Web Development"] # Default for now
+        department=getattr(current_user, 'department', None) or "Computer Science",
+        year=getattr(current_user, 'year', None) or "Junior (3rd Year)",
+        interests=getattr(current_user, 'interests', None) or ["Artificial Intelligence", "Web Development"]
     )

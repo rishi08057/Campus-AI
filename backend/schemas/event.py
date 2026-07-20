@@ -23,8 +23,8 @@ class Event(BaseModel):
 
 
 class EventActionBase(BaseModel):
-    userId: int = Field(
-        ...,
+    userId: Optional[int] = Field(
+        None,
         description="The ID of the user performing the action."
     )
 

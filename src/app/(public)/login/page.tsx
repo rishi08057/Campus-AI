@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 
 import { login } from '@/lib/api';
@@ -54,8 +54,8 @@ export default function LoginPage() {
 
       router.push('/dashboard');
       router.refresh();
-    } catch (err: any) {
-      if (axios.isAxiosError(err)) {
+    } catch (err: unknown) {
+      if (isAxiosError(err)) {
         setError(
           err.response?.data?.detail ||
             'Login failed. Please check your credentials.'

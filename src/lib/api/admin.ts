@@ -2,27 +2,13 @@ import { apiClient } from "./client";
 import { Event } from "@/types/event";
 
 export interface AdminStats {
-  totalEvents: number;
-  totalRegistrations: number;
-  totalUsers: number;
-  avgAttendance: number;
-  recentEvents: Array<Event & { registrationsCount: number; capacity: number }>;
+  total_events: number;
+  total_registrations: number;
+  total_attendees: number;
+  most_popular_event: string | null;
 }
 
 export async function getAdminStats(): Promise<AdminStats> {
-  // Mock aggregation logic
-  const eventsResponse = await apiClient.get<Event[]>("/events");
-  const events = eventsResponse.data;
-
-  return {
-    totalEvents: events.length,
-    totalRegistrations: events.length * 15 + 42, // Mocked total
-    totalUsers: 1250, // Mocked total
-    avgAttendance: 88, // Mocked percentage
-    recentEvents: events.map(e => ({
-      ...e,
-      registrationsCount: Math.floor(Math.random() * 50) + 10,
-      capacity: 100,
-    })),
-  };
+  const response = await apiClient.get<AdminStats>("/admin/stats");
+  return response.data;
 }

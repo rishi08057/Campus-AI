@@ -147,7 +147,7 @@ export function ChatBox({
         ...currentMessages,
         { role: "assistant", content: normalizedReply.text, timestamp: assistantTimestamp },
       ]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(readErrorMessage(err));
     } finally {
       setLoading(false);

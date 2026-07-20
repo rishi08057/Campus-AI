@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
 from typing import Optional
@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from ...database import get_db
 from ...models import Event, Registration, Ticket
-from ...data.mock_events import MOCK_EVENTS
+from ...dependencies import get_current_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -17,18 +17,21 @@ class EventStats(BaseModel):
     most_popular_event: Optional[str] = None
 
 @router.get("/stats", response_model=EventStats)
-def get_admin_stats(db: Session = Depends(get_db)):
+def get_admin_stats(current_user = Depends(get_current_user), db: Session = Depends(get_db)) -> EventStats:
     """
     Get high-level analytics for the admin dashboard.
     """
-    # Total events (using MOCK_EVENTS for now as that's where events are stored)
-    total_events = len(MOCK_EVENTS)
+    if not getattr(current_user, 'is_admin', False):
+        raise HTTPException(403, 'Admin access required')
+
+    # Total events
+    total_events = db.query(Event).count()
     
     # Total registrations
     total_registrations = db.query(Registration).count()
     
     # Total attendees (where is_checked_in == 1)
-    total_attendees = db.query(Ticket).filter(Ticket.is_checked_in == 1).count()
+    total_attendees = db.query(Ticket).filter(Ticket.is_checked_in == True).count()
     
     # Most popular event
     # Find the event_id with the most registrations
@@ -42,7 +45,7 @@ def get_admin_stats(db: Session = Depends(get_db)):
     most_popular_event_title = None
     if popular_query:
         popular_event_id = popular_query.event_id
-        event = next((e for e in MOCK_EVENTS if e.id == popular_event_id), None)
+        event = db.query(Event).filter(Event.id == popular_event_id).first()
         if event:
             most_popular_event_title = event.title
             

@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 
-import { signup } from '@/lib/api';
+import { signup, login } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
@@ -92,6 +92,8 @@ export default function SignupPage() {
         name: formData.fullName,
       });
 
+      await login(formData.email, formData.password);
+
       setSuccess(true);
 
       setFormData({
@@ -101,11 +103,9 @@ export default function SignupPage() {
         fullName: '',
       });
 
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 2000);
-    } catch (err: any) {
-      if (axios.isAxiosError(err)) {
+      router.push('/dashboard');
+    } catch (err: unknown) {
+      if (isAxiosError(err)) {
         setError(
           err.response?.data?.detail ||
             'Registration failed. Please try again.'

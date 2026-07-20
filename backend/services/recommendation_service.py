@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from ..schemas.recommendation import Recommendation
-from ..schemas.event import EventSave, EventRegistration
+from ..schemas.event import Event, EventSave, EventRegistration
 from ..schemas.user import UserProfile
 from ..models import Event as DBEvent
 
@@ -99,7 +99,7 @@ class RecommendationService:
 
             recommendations.append(
                 Recommendation(
-                    event=event,
+                    event=Event.model_validate(event),
                     reason=reason,
                     confidence=final_score,
                     score=final_score,

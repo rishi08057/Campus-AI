@@ -17,15 +17,16 @@ export async function login(email: string, password: string): Promise<Token> {
     },
   });
   
-  if (response.data.access_token) {
-    document.cookie = `token=${response.data.access_token}; path=/; SameSite=Lax`;
-  }
-  
   return response.data;
 }
 
 export async function logout() {
-  document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  try {
+    await apiClient.post("/auth/logout");
+  } catch (err) {
+    // Ignore error if already logged out on backend
+  }
+  document.cookie = 'logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
 export async function getUserProfile(): Promise<UserProfile> {

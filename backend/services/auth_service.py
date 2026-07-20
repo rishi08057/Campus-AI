@@ -3,9 +3,17 @@ from typing import Optional
 from jose import JWTError, jwt
 import bcrypt
 import os
+import secrets
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Configuration
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-it-in-production")
+SECRET_KEY = os.getenv("SECRET_KEY", "")
+if not SECRET_KEY:
+    logger.warning("SECRET_KEY environment variable is empty. Generating a random fallback for development.")
+    SECRET_KEY = secrets.token_urlsafe(32)
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 day
 

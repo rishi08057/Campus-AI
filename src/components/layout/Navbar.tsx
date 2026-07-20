@@ -6,30 +6,24 @@ import { useEffect, useState } from "react";
 import { logout } from "@/lib/api";
 import { useRouter, usePathname } from "next/navigation";
 
-type NavbarLink = {
-  label: string;
-  href: string;
-};
 
 type NavbarProps = {
   brand?: string;
   tagline?: string;
   statusLabel?: string;
-  links?: NavbarLink[];
 };
 
 export function Navbar({
   brand = "CampusAI",
   tagline = "Event Agent",
   statusLabel = "BETA",
-  links: initialLinks = [],
 }: NavbarProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    const token = typeof document !== "undefined" && document.cookie.includes("token=");
+    const token = typeof document !== "undefined" && document.cookie.includes("logged_in=true");
     setIsLoggedIn(!!token);
   }, [pathname]);
 

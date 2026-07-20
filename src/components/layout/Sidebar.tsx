@@ -5,9 +5,12 @@ import { usePathname } from "next/navigation";
 import { logout } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
+import { useState } from "react";
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
   const links = [
     { label: "Dashboard", href: "/dashboard", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-10l1 1m-6 0h6" },
@@ -24,47 +27,74 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white px-4 py-6 shadow-sm">
-      <div className="flex items-center gap-3 px-2 mb-8">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-xs font-semibold text-white shadow-lg shadow-slate-950/15">
-          CA
-        </span>
-        <span className="text-xl font-bold text-slate-950 tracking-tight">CampusAI</span>
-      </div>
+    <>
+      <button
+        onClick={() => setIsOpen(true)}
+        className="fixed top-4 left-4 z-40 p-2 bg-white rounded-md shadow-sm lg:hidden"
+        aria-label="Open sidebar"
+      >
+        <svg className="w-6 h-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
 
-      <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto">
-        {links.map((link) => {
-          const isActive = pathname.startsWith(link.href) && (link.href !== "/dashboard" || pathname === "/dashboard");
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors ${
-                isActive
-                  ? "bg-slate-100 text-slate-950"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-            >
-              <svg className={`h-5 w-5 ${isActive ? 'text-slate-900' : 'text-slate-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={link.icon} />
-              </svg>
-              {link.label}
-            </Link>
-          );
-        })}
-      </nav>
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden" 
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-      <div className="mt-auto border-t border-slate-100 pt-4">
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
-        >
-          <svg className="h-5 w-5 opacity-75" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-          Log Out
-        </button>
-      </div>
-    </aside>
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white px-4 py-6 shadow-sm transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+        <div className="flex items-center justify-between px-2 mb-8">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-xs font-semibold text-white shadow-lg shadow-slate-950/15">
+              CA
+            </span>
+            <span className="text-xl font-bold text-slate-950 tracking-tight">CampusAI</span>
+          </div>
+          <button onClick={() => setIsOpen(false)} className="lg:hidden text-slate-500">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto">
+          {links.map((link) => {
+            const isActive = pathname.startsWith(link.href) && (link.href !== "/dashboard" || pathname === "/dashboard");
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-slate-100 text-slate-950"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+              >
+                <svg className={`h-5 w-5 ${isActive ? 'text-slate-900' : 'text-slate-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={link.icon} />
+                </svg>
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="mt-auto border-t border-slate-100 pt-4">
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+          >
+            <svg className="h-5 w-5 opacity-75" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Log Out
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

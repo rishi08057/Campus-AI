@@ -263,7 +263,15 @@ cd CampusAI
    ```bash
    python backend/seed_events.py
    ```
-5. Start the FastAPI backend:
+5. ### Updating the Database
+
+After pulling the latest changes:
+
+```bash
+git pull
+alembic upgrade head
+```   
+6. Start the FastAPI backend:
    ```bash
    uvicorn backend.main:app --reload
    ```

@@ -15,6 +15,21 @@ export function SearchBar({
   onClear,
   isLoading = false,
 }: SearchBarProps) {
+  const [localValue, setLocalValue] = React.useState(value);
+
+  React.useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localValue !== value) {
+        onChange(localValue);
+      }
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [localValue, onChange, value]);
+
   return (
     <div className="relative flex w-full items-center gap-3 rounded-2xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/50 px-4 py-3 shadow-sm transition-all focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-sky-500/10 hover:border-slate-300/70 sm:px-5 sm:py-4">
       <span className="flex-shrink-0 text-slate-400" aria-hidden="true">
@@ -25,17 +40,18 @@ export function SearchBar({
       </span>
 
       <input
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
+        value={localValue}
+        onChange={(event) => setLocalValue(event.target.value)}
         placeholder={placeholder}
         disabled={isLoading}
         className="flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
       />
 
-      {value && (
+      {localValue && (
         <button
           type="button"
           onClick={() => {
+            setLocalValue("");
             onChange("");
             onClear?.();
           }}

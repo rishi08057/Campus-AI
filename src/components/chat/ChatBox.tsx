@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { apiClient } from "@/lib/api";
+import { apiClient, isAxiosError } from "@/lib/api";
 import { loadChatSession, saveChatSession } from "@/lib/chatStorage";
 import { ChatHistory } from "@/components/chat/ChatHistory";
 import { InputArea } from "@/components/chat/InputArea";
@@ -51,7 +50,7 @@ function normalizeAssistantResponse(data: ChatSuccessResponse | string | null): 
 }
 
 function readErrorMessage(error: unknown): string {
-  if (axios.isAxiosError<ChatErrorResponse>(error)) {
+  if (isAxiosError<ChatErrorResponse>(error)) {
     return (
       error.response?.data?.detail ??
       error.response?.data?.error ??

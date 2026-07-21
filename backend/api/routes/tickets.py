@@ -9,8 +9,6 @@ from ...database import get_db
 from ...models import Ticket, Registration, User
 from ...schemas.ticket import TicketResponse
 from ...dependencies import get_current_user
-from ...repositories.ticket_repository import ticket_repository
-
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
 @router.get("", response_model=List[TicketResponse])
@@ -22,7 +20,12 @@ def get_user_tickets(
     Returns all tickets owned by the logged-in user.
     Uses SQLAlchemy joins through Registration for ownership validation.
     """
-    tickets = ticket_repository.get_user_tickets(db, current_user.id)
+    tickets = (
+        db.query(Ticket)
+        .join(Registration, Ticket.registration_id == Registration.id)
+        .filter(Registration.user_id == current_user.id)
+        .all()
+    )
     
     return tickets
 
@@ -36,7 +39,12 @@ def get_ticket_by_id(
     Returns a specific ticket owned by the authenticated user.
     Returns 404 if not found or if the user does not own it.
     """
-    ticket = ticket_repository.get_user_ticket_by_id(db, ticket_id, current_user.id)
+    ticket = (
+        db.query(Ticket)
+        .join(Registration, Ticket.registration_id == Registration.id)
+        .filter(Registration.user_id == current_user.id, Ticket.ticket_id == ticket_id)
+        .first()
+    )
 
     if not ticket:
         raise HTTPException(
@@ -56,7 +64,12 @@ def get_ticket_qr(
     Generates and returns a PNG QR code image for a ticket owned by the user.
     """
     # Validate ownership before generating QR
-    ticket = ticket_repository.get_user_ticket_by_id(db, ticket_id, current_user.id)
+    ticket = (
+        db.query(Ticket)
+        .join(Registration, Ticket.registration_id == Registration.id)
+        .filter(Registration.user_id == current_user.id, Ticket.ticket_id == ticket_id)
+        .first()
+    )
 
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")

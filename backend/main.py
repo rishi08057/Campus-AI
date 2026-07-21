@@ -5,10 +5,15 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Load environment variables from .env
+# --------------------------------------------------
+# Load Environment Variables
+# --------------------------------------------------
+
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    load_dotenv(os.path.join(BASE_DIR, ".env"))
 except Exception:
     pass
 
@@ -32,7 +37,6 @@ from .database import (
 from .models import Event
 from . import models
 
-from .services.rag_service import vector_service
 
 # --------------------------------------------------
 # Lifespan Context Manager
@@ -46,6 +50,13 @@ async def lifespan(app: FastAPI):
     # Load and Index Data
     db = SessionLocal()
     try:
+        from .agents.config import (
+            event_vector_service,
+            support_vector_service,
+            placement_vector_service,
+            health_vector_service,
+        )
+
         events = db.query(Event).all()
 
         if not events:
@@ -69,97 +80,96 @@ async def lifespan(app: FastAPI):
             events = db.query(Event).all()
 
         print(f"Found {len(events)} events")
-        vector_service.upsert_events(events)
+
+        event_vector_service.upsert_events(events)
+
         print(f"Indexed {len(events)} events into ChromaDB")
 
+        def index_json_docs(
+            directory: str,
+            files: list[str],
+            v_service,
+            doc_type: str,
+        ):
+            dir_path = os.path.join(
+                os.path.dirname(__file__),
+                "data",
+                directory,
+            )
+
+            all_docs = []
+
+            if os.path.exists(dir_path):
+                for filename in files:
+                    filepath = os.path.join(dir_path, filename)
+
+                    if os.path.exists(filepath):
+                        with open(filepath, "r", encoding="utf-8") as f:
+                            all_docs.extend(json.load(f))
+
+                if all_docs:
+                    v_service.index_documents(all_docs)
+                    print(
+                        f"Indexed {len(all_docs)} {doc_type} documents into ChromaDB"
+                    )
+                else:
+                    print(
+                        f"Warning: No {doc_type} documents found in {dir_path}."
+                    )
+            else:
+                print(
+                    f"Warning: {doc_type} data directory {dir_path} does not exist."
+                )
+
+        index_json_docs(
+            "support",
+            [
+                "attendance.json",
+                "exams.json",
+                "faculty.json",
+                "rooms.json",
+            ],
+            support_vector_service,
+            "support",
+        )
+
+        index_json_docs(
+            "placement",
+            [
+                "companies.json",
+                "interviews.json",
+                "resume.json",
+                "coding.json",
+                "aptitude.json",
+                "career.json",
+            ],
+            placement_vector_service,
+            "placement",
+        )
+
+        index_json_docs(
+            "health",
+            [
+                "wellness.json",
+                "nutrition.json",
+                "exercise.json",
+                "mental_health.json",
+                "sleep.json",
+                "campus_health.json",
+                "emergency.json",
+            ],
+            health_vector_service,
+            "health",
+        )
+
     except Exception as e:
-        print(f"Warning: Could not index events: {e}")
+        print(f"Warning: Could not index data during startup: {e}")
+
     finally:
         try:
             db.close()
         except Exception:
             pass
-
-    # Load Support Documents + Index into ChromaDB
-    try:
-        from .services.support_vector_service import support_vector_service
-
-        support_dir = os.path.join(os.path.dirname(__file__), "data", "support")
-        support_docs = []
-
-        if os.path.exists(support_dir):
-            for filename in ["attendance.json", "exams.json", "faculty.json", "rooms.json"]:
-                filepath = os.path.join(support_dir, filename)
-                if os.path.exists(filepath):
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        docs = json.load(f)
-                        support_docs.extend(docs)
-            
-            if support_docs:
-                print(f"Found {len(support_docs)} support documents")
-                support_vector_service.index_documents(support_docs)
-                print(f"Indexed {len(support_docs)} support documents into ChromaDB")
-            else:
-                print("Warning: No support documents found in support JSON files.")
-        else:
-            print(f"Warning: Support data directory {support_dir} does not exist.")
-
-    except Exception as e:
-        print(f"Warning: Could not index support documents: {e}")
-
-    # Load Placement Documents + Index into ChromaDB
-    try:
-        from .services.placement_vector_service import placement_vector_service
-
-        placement_dir = os.path.join(os.path.dirname(__file__), "data", "placement")
-        placement_docs = []
-
-        if os.path.exists(placement_dir):
-            for filename in ["companies.json", "interviews.json", "resume.json", "coding.json", "aptitude.json", "career.json"]:
-                filepath = os.path.join(placement_dir, filename)
-                if os.path.exists(filepath):
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        docs = json.load(f)
-                        placement_docs.extend(docs)
-            
-            if placement_docs:
-                print(f"Found {len(placement_docs)} placement documents")
-                placement_vector_service.index_documents(placement_docs)
-                print(f"Indexed {len(placement_docs)} placement documents into ChromaDB")
-            else:
-                print("Warning: No placement documents found in placement JSON files.")
-        else:
-            print(f"Warning: Placement data directory {placement_dir} does not exist.")
-
-    except Exception as e:
-        print(f"Warning: Could not index placement documents: {e}")
-
-    # Load Health Documents + Index into ChromaDB
-    try:
-        from .services.health_vector_service import health_vector_service
-
-        health_dir = os.path.join(os.path.dirname(__file__), "data", "health")
-        health_docs = []
-
-        if os.path.exists(health_dir):
-            for filename in ["wellness.json", "nutrition.json", "exercise.json", "mental_health.json", "sleep.json", "campus_health.json", "emergency.json"]:
-                filepath = os.path.join(health_dir, filename)
-                if os.path.exists(filepath):
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        docs = json.load(f)
-                        health_docs.extend(docs)
-            
-            if health_docs:
-                print(f"Found {len(health_docs)} health documents")
-                health_vector_service.index_documents(health_docs)
-                print(f"Indexed {len(health_docs)} health documents into ChromaDB")
-            else:
-                print("Warning: No health documents found in health JSON files.")
-        else:
-            print(f"Warning: Health data directory {health_dir} does not exist.")
-
-    except Exception as e:
-        print(f"Warning: Could not index health documents: {e}")
 
     yield
 

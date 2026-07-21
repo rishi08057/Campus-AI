@@ -36,3 +36,11 @@ async def get_current_user(token: Optional[str] = Depends(get_token_from_request
     if user is None:
         raise credentials_exception
     return user
+
+async def get_current_admin_user(current_user: User = Depends(get_current_user)):
+    if not getattr(current_user, 'is_admin', False):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    return current_user

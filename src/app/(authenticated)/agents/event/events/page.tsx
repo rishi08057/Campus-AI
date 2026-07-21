@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Container } from "@/components/ui/Container";
-import { apiClient, getRegisteredEvents, getSavedEvents } from "@/lib/api";
+import { apiClient, getEvents, getRegisteredEvents, getSavedEvents } from "@/lib/api";
 import { Event as EventType } from "@/types/event";
 import { SearchBar } from "@/components/events/SearchBar";
 import { EventFilters } from "@/components/events/EventFilters";
@@ -25,8 +25,8 @@ export default function EventsPage() {
     try {
       const token = typeof document !== 'undefined' && document.cookie.includes('token=');
       
-      const promises: any[] = [
-        apiClient.get<EventType[]>("/events")
+      const promises: Promise<any>[] = [
+        getEvents(0, 100) // load up to 100 events
       ];
       
       if (token) {
@@ -36,13 +36,17 @@ export default function EventsPage() {
       
       const [eventsRes, savedRes, registeredRes] = await Promise.all(promises);
       
-      setEvents(eventsRes.data || []);
+      setEvents(eventsRes || []);
       if (token && savedRes && registeredRes) {
-        setSavedEventIds(savedRes.map((e: any) => e.id));
-        setRegisteredEventIds(registeredRes.map((e: any) => e.id));
+        setSavedEventIds(savedRes.map((e: EventType) => e.id));
+        setRegisteredEventIds(registeredRes.map((e: EventType) => e.id));
       }
-    } catch (err: any) {
-      setError(err?.message ?? "Failed to load events");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to load events");
+      }
     } finally {
       setLoading(false);
     }

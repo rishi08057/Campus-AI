@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 import logging
 from sqlalchemy.orm import Session
-from ...agents.event_agent.prompt import EVENT_AGENT_PROMPT
 from ...schemas.chat import ChatRequest, ChatResponse
 from ...services.event_chat_service import generate_ai_response
 from ...database import get_db
@@ -10,7 +9,6 @@ from ...models import (
     ChatSession,
     ChatMessage as DBChatMessage,
 )
-from ...services.rag_service import vector_service
 from ...dependencies import get_current_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -119,22 +117,26 @@ async def create_chat_reply(
     # Load Previous History
     # --------------------------------------------------
 
-    db_history = (
-        db.query(DBChatMessage)
-        .filter(DBChatMessage.session_id == session_id)
-        .order_by(DBChatMessage.created_at.desc())
-        .offset(1)
-        .limit(10)
-        .all()
-    )
-
-    history_data = [
-        {
-            "role": msg.role,
-            "content": msg.content,
-        }
-        for msg in reversed(db_history)
-    ]
+    # Use frontend history as the source of truth, fallback to DB if empty
+    history_data = []
+    if payload.history:
+        history_data = [{"role": msg.role, "content": msg.content} for msg in payload.history]
+    else:
+        db_history = (
+            db.query(DBChatMessage)
+            .filter(DBChatMessage.session_id == session_id)
+            .order_by(DBChatMessage.created_at.desc())
+            .offset(1)
+            .limit(10)
+            .all()
+        )
+        history_data = [
+            {
+                "role": msg.role,
+                "content": msg.content,
+            }
+            for msg in reversed(db_history)
+        ]
 
     # --------------------------------------------------
     # RAG + Gemini

@@ -1,6 +1,11 @@
 import { apiClient } from "./client";
 import { Event, EventRegistration, EventRegistrationResponse, EventSave, EventSaveResponse } from "@/types/event";
 
+export async function getEvents(skip: number = 0, limit: number = 50): Promise<Event[]> {
+  const response = await apiClient.get<Event[]>("/events", { params: { skip, limit } });
+  return response.data;
+}
+
 export async function registerForEvent(registration: EventRegistration): Promise<EventRegistrationResponse> {
   const response = await apiClient.post<EventRegistrationResponse>("/events/register", registration);
   return response.data;

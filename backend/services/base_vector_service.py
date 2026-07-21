@@ -15,11 +15,8 @@ class BaseVectorService:
         self.client = chromadb.PersistentClient(path=db_path)
         self.collection = self.client.get_or_create_collection(name=collection_name)
         
-        api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            raise RuntimeError("GEMINI_API_KEY not found")
-        
-        self.genai_client = genai.Client(api_key=api_key)
+        from .gemini_client import get_gemini_client
+        self.genai_client = get_gemini_client()
         self.model_name = "gemini-embedding-2"
 
     def _get_embedding(self, text: str) -> List[float]:

@@ -51,6 +51,14 @@ def register_for_event(
             detail="Event not found",
         )
 
+    from datetime import datetime, timezone
+    if db_event.datetime and db_event.datetime.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
+        return EventRegistrationResponse(
+            message="Cannot register for an event that has already occurred",
+            success=False,
+            registration=registration_in,
+        )
+
     # Check if already registered
     existing_reg = (
         db.query(Registration)

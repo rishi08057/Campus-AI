@@ -29,16 +29,21 @@ def get_recommendations(
     db: Session = Depends(get_db),
 ) -> List[Recommendation]:
 
+    import json
+    
+    interests = []
+    if current_user.interests:
+        try:
+            interests = json.loads(current_user.interests)
+        except json.JSONDecodeError:
+            interests = [current_user.interests]
+            
     user_profile = UserProfile(
         id=current_user.id,
-        name=current_user.name or "User",
-        department=current_user.department or "Computer Science",
-        year=current_user.year or "3",
-        interests=(
-            current_user.interests.split(",")
-            if current_user.interests
-            else ["Artificial Intelligence", "Web Development"]
-        ),
+        name=current_user.name or "",
+        department=current_user.department or "",
+        year=current_user.year or "",
+        interests=interests,
     )
 
     user_saved = [

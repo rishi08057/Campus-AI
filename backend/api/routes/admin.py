@@ -16,13 +16,13 @@ class EventStats(BaseModel):
     total_attendees: int
     most_popular_event: Optional[str] = None
 
+from ...dependencies import get_current_admin_user
+
 @router.get("/stats", response_model=EventStats)
-def get_admin_stats(current_user = Depends(get_current_user), db: Session = Depends(get_db)) -> EventStats:
+def get_admin_stats(current_user = Depends(get_current_admin_user), db: Session = Depends(get_db)) -> EventStats:
     """
     Get high-level analytics for the admin dashboard.
     """
-    if not getattr(current_user, 'is_admin', False):
-        raise HTTPException(403, 'Admin access required')
 
     # Total events
     total_events = db.query(Event).count()
@@ -30,7 +30,7 @@ def get_admin_stats(current_user = Depends(get_current_user), db: Session = Depe
     # Total registrations
     total_registrations = db.query(Registration).count()
     
-    # Total attendees (where is_checked_in == 1)
+    # Total attendees (where is_checked_in == True)
     total_attendees = db.query(Ticket).filter(Ticket.is_checked_in == True).count()
     
     # Most popular event

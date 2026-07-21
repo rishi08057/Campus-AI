@@ -17,23 +17,14 @@ def _get_model_name() -> str:
     return os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
 
-_gemini_client = None
-
-def _get_gemini_client() -> genai.Client:
-    global _gemini_client
-    if _gemini_client is None:
-        api_key = _get_api_key()
-        if not api_key:
-            raise RuntimeError("GEMINI_API_KEY not found")
-        _gemini_client = genai.Client(api_key=api_key)
-    return _gemini_client
+from .gemini_client import get_gemini_client
 
 def _call_gemini(
     message: str,
     history: Optional[List[dict]] = None,
     system_prompt: Optional[str] = None,
 ) -> str:
-    client = _get_gemini_client()
+    client = get_gemini_client()
 
     # Convert history to Gemini format (role mapping)
     contents = []

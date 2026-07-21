@@ -62,7 +62,7 @@ export function RecommendationCard({
     
     setIsSaving(true);
     try {
-      const response = await saveEvent({ userId: 0, eventId: event.id });
+      const response = await saveEvent({ eventId: event.id });
       if (response.success) {
         setIsSaved(response.saved);
       }

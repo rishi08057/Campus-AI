@@ -23,6 +23,13 @@ export function QRScanner({
   disableFlip = false,
 }: QRScannerProps) {
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const onScanSuccessRef = useRef(onScanSuccess);
+  const onScanFailureRef = useRef(onScanFailure);
+
+  useEffect(() => {
+    onScanSuccessRef.current = onScanSuccess;
+    onScanFailureRef.current = onScanFailure;
+  }, [onScanSuccess, onScanFailure]);
 
   useEffect(() => {
     // Initialize the scanner
@@ -37,10 +44,10 @@ export function QRScanner({
 
     scannerRef.current.render(
       (decodedText) => {
-        onScanSuccess(decodedText);
+        onScanSuccessRef.current(decodedText);
       },
       (errorMessage) => {
-        if (onScanFailure) onScanFailure(errorMessage);
+        if (onScanFailureRef.current) onScanFailureRef.current(errorMessage);
       }
     );
 
@@ -52,7 +59,7 @@ export function QRScanner({
         });
       }
     };
-  }, [fps, qrbox, aspectRatio, disableFlip, onScanSuccess, onScanFailure]);
+  }, [fps, qrbox, aspectRatio, disableFlip]);
 
   return (
     <div className="w-full max-w-md overflow-hidden rounded-3xl bg-slate-100 ring-1 ring-slate-200">

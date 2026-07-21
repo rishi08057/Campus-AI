@@ -92,10 +92,36 @@ export function saveChatSession(id: string, messages: ChatMessage[], title?: str
       agentType: agentType || existing?.agentType || "event"
     };
 
-    allSessions[id] = session;
-    localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(allSessions));
+    // Try saving, if quota exceeded, prune older sessions and retry
+    try {
+      allSessions[id] = session;
+      localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(allSessions));
+    } catch (e: unknown) {
+      if (e instanceof Error && (e.name === "QuotaExceededError" || e.name === "NS_ERROR_DOM_QUOTA_REACHED")) {
+        console.warn("Storage quota exceeded. Pruning old chat sessions...");
+        const sortedIds = Object.keys(allSessions).sort(
+          (a, b) => allSessions[b].lastUpdated - allSessions[a].lastUpdated
+        );
+        
+        // Remove oldest half
+        const toKeep = sortedIds.slice(0, Math.max(1, Math.floor(sortedIds.length / 2)));
+        const prunedSessions: Record<string, ChatSession> = {};
+        for (const keepId of toKeep) {
+          prunedSessions[keepId] = allSessions[keepId];
+        }
+        
+        prunedSessions[id] = session; // Ensure current session is kept
+        localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(prunedSessions));
+        
+        // Update IDs
+        localStorage.setItem(SESSION_LIST_KEY, JSON.stringify(Object.keys(prunedSessions)));
+        return; // Early return since we already updated SESSION_LIST_KEY
+      } else {
+        throw e;
+      }
+    }
 
-    // Update ID list if new
+    // Update ID list if new and no quota error occurred
     const ids = getSessionIds();
     if (!ids.includes(id)) {
       localStorage.setItem(SESSION_LIST_KEY, JSON.stringify([id, ...ids]));

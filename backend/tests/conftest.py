@@ -4,6 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 import uuid
+import os
+
+os.environ["TESTING"] = "1"
 
 from ..main import create_app
 from ..database import Base, get_db

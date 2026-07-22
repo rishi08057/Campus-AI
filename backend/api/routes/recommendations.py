@@ -29,7 +29,7 @@ def get_recommendations(
     db: Session = Depends(get_db),
 ) -> List[Recommendation]:
 
-    from ..utils import parse_user_interests
+    from ...utils import parse_user_interests
     interests = parse_user_interests(current_user)
             
     user_profile = UserProfile(

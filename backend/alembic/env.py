@@ -24,7 +24,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from backend.models import Base
 target_metadata = Base.metadata
 
-db_url = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/campusai")
+db_url = os.getenv("DATABASE_URL")
+if not db_url:
+    raise RuntimeError("DATABASE_URL environment variable must be set for Alembic migrations.")
 config.set_main_option("sqlalchemy.url", db_url)
 
 # other values from the config, defined by the needs of env.py,

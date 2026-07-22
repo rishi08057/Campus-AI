@@ -85,6 +85,16 @@ def register_for_event(
 
     db.add(new_reg)
     try:
+        db.flush()
+        
+        # Create ticket
+        ticket_id = str(uuid.uuid4())
+        new_ticket = Ticket(
+            ticket_id=ticket_id,
+            registration_id=new_reg.id,
+            qr_code_url=f"/tickets/{ticket_id}/qr",
+        )
+        db.add(new_ticket)
         db.commit()
     except IntegrityError:
         db.rollback()
@@ -95,18 +105,6 @@ def register_for_event(
             registration=registration_in,
         )
     db.refresh(new_reg)
-
-    # Create ticket
-    ticket_id = str(uuid.uuid4())
-
-    new_ticket = Ticket(
-        ticket_id=ticket_id,
-        registration_id=new_reg.id,
-        qr_code_url=f"/tickets/{ticket_id}/qr",
-    )
-
-    db.add(new_ticket)
-    db.commit()
 
     return EventRegistrationResponse(
         message="Successfully registered for the event",
@@ -146,8 +144,11 @@ def save_event(
 
     # Toggle save/unsave
     if existing_save:
-        db.delete(existing_save)
-        db.commit()
+        try:
+            db.delete(existing_save)
+            db.commit()
+        except IntegrityError:
+            db.rollback()
 
         return EventSaveResponse(
             message="Event removed from saved list",
@@ -162,7 +163,10 @@ def save_event(
     )
 
     db.add(new_save)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
 
     return EventSaveResponse(
         message="Event saved successfully",

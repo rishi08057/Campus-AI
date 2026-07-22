@@ -2,12 +2,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 import os
 
-# Default to SQLite for development.
-# Can be overridden by DATABASE_URL in .env
-SQLALCHEMY_DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://postgres:postgres@localhost:5432/campusai"
-)
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+if not SQLALCHEMY_DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable must be set. "
+        "Example: sqlite:///campusai.db or postgresql://user:pass@host/db"
+    )
 
 if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
     # If sqlite URL is relative, anchor it to the directory containing this file

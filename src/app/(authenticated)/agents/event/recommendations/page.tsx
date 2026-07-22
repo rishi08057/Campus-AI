@@ -29,7 +29,7 @@ export default function RecommendationsPage() {
       try {
         setState((prev) => ({ ...prev, loading: true, error: null }));
 
-        const token = typeof document !== 'undefined' && document.cookie.includes('token=');
+        const token = typeof document !== 'undefined' && document.cookie.includes('logged_in=true');
         
         const promises: [Promise<Recommendation[]>, Promise<Event[]>?, Promise<Event[]>?] = [
           getRecommendations()

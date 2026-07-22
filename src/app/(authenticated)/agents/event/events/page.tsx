@@ -23,7 +23,7 @@ export default function EventsPage() {
     setLoading(true);
     setError(null);
     try {
-      const token = typeof document !== 'undefined' && document.cookie.includes('token=');
+      const token = typeof document !== 'undefined' && document.cookie.includes('logged_in=true');
       
       const promises: Promise<any>[] = [
         getEvents(0, 100) // load up to 100 events

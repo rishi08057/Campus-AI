@@ -54,6 +54,9 @@ logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if os.getenv("TESTING") == "1":
+        yield
+        return
 
     db = SessionLocal()
 
@@ -179,7 +182,7 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
 
     def check_env():
-        required = ["SECRET_KEY", "GEMINI_API_KEY"]
+        required = ["SECRET_KEY", "GEMINI_API_KEY", "DATABASE_URL"]
         missing = [v for v in required if not os.getenv(v)]
 
         if missing:

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { RegistrationModal } from "./RegistrationModal";
 import { saveEvent } from "@/lib/api";
+import { formatDateTime } from "@/utils/formatDate";
 
 export type EventCardProps = {
   id: number;
@@ -11,24 +12,13 @@ export type EventCardProps = {
   description: string;
   venue: string;
   category: string;
-  datetime: string;
-  isInitialSaved?: boolean;
-  isInitialRegistered?: boolean;
+  event_datetime: string;
+  isInitialSaved: boolean;
+  isInitialRegistered: boolean;
   className?: string;
 };
 
-function formatDateTime(datetime: string) {
-  const parsedDate = new Date(datetime);
 
-  if (Number.isNaN(parsedDate.getTime())) {
-    return datetime;
-  }
-
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(parsedDate);
-}
 
 export function EventCard({
   id,
@@ -36,7 +26,7 @@ export function EventCard({
   description,
   venue,
   category,
-  datetime,
+  event_datetime,
   isInitialSaved = false,
   isInitialRegistered = false,
   className = "",
@@ -102,8 +92,8 @@ export function EventCard({
                 />
               </svg>
             </button>
-            <time className="text-sm font-medium text-slate-500" dateTime={datetime}>
-              {formatDateTime(datetime)}
+            <time className="text-sm font-medium text-slate-500" dateTime={event_datetime}>
+              {formatDateTime(event_datetime)}
             </time>
           </div>
         </div>
@@ -127,7 +117,7 @@ export function EventCard({
               <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                 Date & Time
               </span>
-              <p className="mt-1 font-medium text-slate-800">{formatDateTime(datetime)}</p>
+              <p className="mt-1 font-medium text-slate-800">{formatDateTime(event_datetime)}</p>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -28,27 +29,34 @@ from .api.routes.auth import router as auth_router
 from .api.routes.tickets import router as tickets_router
 from .api.routes.admin import router as admin_router
 
-from .database import (
-    engine,
-    Base,
-    SessionLocal,
-)
-
+from .database import SessionLocal
 from .models import Event
-from . import models
+from .limiter import limiter
 
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
 
 # --------------------------------------------------
-# Lifespan Context Manager
+# Logging
+# --------------------------------------------------
+
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger("backend.main")
+
+# Hide noisy HTTP request logs from Gemini
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
+
+# --------------------------------------------------
+# Lifespan
 # --------------------------------------------------
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create Database Tables
-    Base.metadata.create_all(bind=engine)
 
-    # Load and Index Data
     db = SessionLocal()
+
     try:
         from .agents.config import (
             event_vector_service,
@@ -57,33 +65,18 @@ async def lifespan(app: FastAPI):
             health_vector_service,
         )
 
+        # ---------------- Events ----------------
+
         events = db.query(Event).all()
+        logger.info(f"Found {len(events)} events")
 
-        if not events:
-            from .data.mock_events import MOCK_EVENTS
+        if event_vector_service.collection.count() == 0:
+            event_vector_service.upsert_events(events)
+            logger.info(f"Indexed {len(events)} events into ChromaDB")
+        else:
+            logger.info("Events already indexed. Skipping.")
 
-            print("Database empty. Loading mock events...")
-
-            for event in MOCK_EVENTS:
-                db.add(
-                    Event(
-                        id=event.id,
-                        title=event.title,
-                        description=event.description,
-                        venue=event.venue,
-                        category=event.category,
-                        datetime=event.datetime,
-                    )
-                )
-
-            db.commit()
-            events = db.query(Event).all()
-
-        print(f"Found {len(events)} events")
-
-        event_vector_service.upsert_events(events)
-
-        print(f"Indexed {len(events)} events into ChromaDB")
+        # ---------------- Generic JSON Indexer ----------------
 
         def index_json_docs(
             directory: str,
@@ -99,27 +92,32 @@ async def lifespan(app: FastAPI):
 
             all_docs = []
 
-            if os.path.exists(dir_path):
-                for filename in files:
-                    filepath = os.path.join(dir_path, filename)
+            if not os.path.exists(dir_path):
+                logger.warning(f"{doc_type} directory not found: {dir_path}")
+                return
 
-                    if os.path.exists(filepath):
-                        with open(filepath, "r", encoding="utf-8") as f:
-                            all_docs.extend(json.load(f))
+            for filename in files:
+                filepath = os.path.join(dir_path, filename)
 
-                if all_docs:
-                    v_service.index_documents(all_docs)
-                    print(
-                        f"Indexed {len(all_docs)} {doc_type} documents into ChromaDB"
-                    )
-                else:
-                    print(
-                        f"Warning: No {doc_type} documents found in {dir_path}."
-                    )
-            else:
-                print(
-                    f"Warning: {doc_type} data directory {dir_path} does not exist."
+                if os.path.exists(filepath):
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        all_docs.extend(json.load(f))
+
+            if not all_docs:
+                logger.warning(f"No {doc_type} documents found.")
+                return
+
+            if v_service.collection.count() == 0:
+                v_service.index_documents(all_docs)
+                logger.info(
+                    f"Indexed {len(all_docs)} {doc_type} documents into ChromaDB"
                 )
+            else:
+                logger.info(
+                    f"{doc_type.capitalize()} collection already indexed. Skipping."
+                )
+
+        # ---------------- Support ----------------
 
         index_json_docs(
             "support",
@@ -132,6 +130,8 @@ async def lifespan(app: FastAPI):
             support_vector_service,
             "support",
         )
+
+        # ---------------- Placement ----------------
 
         index_json_docs(
             "placement",
@@ -146,6 +146,8 @@ async def lifespan(app: FastAPI):
             placement_vector_service,
             "placement",
         )
+
+        # ---------------- Health ----------------
 
         index_json_docs(
             "health",
@@ -163,27 +165,41 @@ async def lifespan(app: FastAPI):
         )
 
     except Exception as e:
-        print(f"Warning: Could not index data during startup: {e}")
+        logger.exception(f"Startup indexing failed: {e}")
 
     finally:
-        try:
-            db.close()
-        except Exception:
-            pass
+        db.close()
 
     yield
 
-
 # --------------------------------------------------
-# FastAPI Application Factory
+# App Factory
 # --------------------------------------------------
 
 def create_app() -> FastAPI:
 
+    def check_env():
+        required = ["SECRET_KEY", "GEMINI_API_KEY"]
+        missing = [v for v in required if not os.getenv(v)]
+
+        if missing:
+            raise RuntimeError(
+                f"Missing required environment variables: {', '.join(missing)}"
+            )
+
+    check_env()
+
     app = FastAPI(
-        title="CampusAI Backend",
+        title="Campus-AI API",
+        description="Backend API for Campus-AI platform",
         version="0.1.0",
         lifespan=lifespan,
+    )
+
+    app.state.limiter = limiter
+    app.add_exception_handler(
+        RateLimitExceeded,
+        _rate_limit_exceeded_handler,
     )
 
     app.add_middleware(

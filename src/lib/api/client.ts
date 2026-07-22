@@ -24,10 +24,6 @@ apiClient.interceptors.response.use(
         document.cookie =
           "logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
 
-        // Attempt to clear token cookie (works if not HttpOnly)
-        document.cookie =
-          "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-
         window.location.href = "/login";
       }
     }

@@ -1,9 +1,11 @@
 export interface UserProfile {
   id: number;
-  name: string;
-  department: string;
-  year: string;
+  email: string;
+  name?: string | null;
+  department?: string | null;
+  year?: string | null;
   interests: string[];
+  is_admin?: boolean;
 }
 
 export interface UserCreate {

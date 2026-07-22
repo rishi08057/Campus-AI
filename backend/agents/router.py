@@ -7,7 +7,7 @@ class AgentRouter:
     """
 
     @staticmethod
-    async def route(agent_type: str, message: str, history: list[dict]) -> str:
+    def route(agent_type: str, message: str, history: list[dict]) -> str:
         """
         Routes the message and history to the agent specified by agent_type.
         """
@@ -15,4 +15,4 @@ class AgentRouter:
         if not agent:
             raise HTTPException(status_code=400, detail=f"Invalid agent_type: {agent_type}")
         
-        return await agent.get_response(message, history)
+        return agent.get_response(message, history)

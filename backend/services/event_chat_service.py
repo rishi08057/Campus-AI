@@ -42,7 +42,7 @@ def _call_gemini(
             system_instruction=system_prompt,
         )
 
-    print(f"Sending request to Gemini ({len(contents)} messages)...")
+    logger.info(f"Sending request to Gemini ({len(contents)} messages)...")
 
     response = client.models.generate_content(
         model=_get_model_name(),
@@ -50,18 +50,17 @@ def _call_gemini(
         config=config,
     )
 
-    print("Received response from Gemini")
+    logger.info("Received response from Gemini")
 
     return response.text or ""
 
 
-async def generate_ai_response(
+def generate_ai_response(
     message: str,
     history: Optional[List[dict]] = None,
     system_prompt: Optional[str] = None,
 ) -> str:
-    return await asyncio.to_thread(
-        _call_gemini,
+    return _call_gemini(
         message,
         history,
         system_prompt,

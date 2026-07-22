@@ -8,8 +8,16 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "CampusAI",
-  description: "A multi-agent platform for CampusAI.",
+  title: "Campus-AI | Smart Campus Experience",
+  description: "A multi-agent platform for Campus-AI, providing intelligent event discovery, ticketing, and personalized recommendations for students.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Campus-AI",
+    description: "Intelligent event discovery and ticketing platform.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

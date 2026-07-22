@@ -3,7 +3,6 @@ from typing import Optional
 from jose import JWTError, jwt
 import bcrypt
 import os
-import secrets
 import logging
 
 logger = logging.getLogger(__name__)

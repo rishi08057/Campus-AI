@@ -4,7 +4,7 @@ from datetime import datetime
 
 class UserBase(BaseModel):
     email: EmailStr
-    name: Optional[str] = None
+    name: Optional[str] = Field(None, max_length=100)
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8)

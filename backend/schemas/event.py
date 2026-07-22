@@ -16,7 +16,7 @@ class Event(BaseModel):
         description="The type of event (e.g., Workshop, Competition)."
     )
 
-    datetime: DateTime = Field(
+    event_datetime: DateTime = Field(
         ...,
         description="The scheduled date and time for the event."
     )

@@ -59,7 +59,7 @@ class Event(Base):
     description = Column(Text)
     venue = Column(String)
     category = Column(String)
-    datetime = Column(DateTime)
+    event_datetime = Column(DateTime)
 
     created_at = Column(
         DateTime,
@@ -250,6 +250,7 @@ class ChatMessage(Base):
     session_id = Column(
         String,
         ForeignKey("chat_sessions.id"),
+        nullable=False,
         index=True,
     )
 

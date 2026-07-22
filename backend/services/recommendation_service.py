@@ -8,7 +8,13 @@ from ..schemas.user import UserProfile
 from ..models import Event as DBEvent
 
 
+import time
+
 class RecommendationService:
+    def __init__(self):
+        self._cache = {}
+        self._cache_ttl = 300  # 5 minutes
+
     def get_personalized_recommendations(
         self,
         db: Session,
@@ -20,10 +26,17 @@ class RecommendationService:
         Generate personalized event recommendations based on user interests,
         saved events, and registration history.
         """
+        cache_key = (user.id, len(saved_events), len(registered_events))
+        now = time.time()
+        
+        if cache_key in self._cache:
+            entry, timestamp = self._cache[cache_key]
+            if now - timestamp < self._cache_ttl:
+                return entry
 
         recommendations = []
 
-        # Load events from PostgreSQL
+        # Load events from database
         events = db.query(DBEvent).all()
 
         interacted_event_ids = (
@@ -111,7 +124,9 @@ class RecommendationService:
             reverse=True,
         )
 
-        return recommendations[:6]
+        result = recommendations[:6]
+        self._cache[cache_key] = (result, now)
+        return result
 
 
 recommendation_service = RecommendationService()

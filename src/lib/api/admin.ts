@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import { Event } from "@/types/event";
+
 
 export interface AdminStats {
   total_events: number;

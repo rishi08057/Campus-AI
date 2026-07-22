@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 import logging
 from sqlalchemy.orm import Session
 from ...schemas.chat import ChatRequest, ChatResponse
-from ...services.event_chat_service import generate_ai_response
+
 from ...database import get_db
 from ...models import (
     User,
@@ -10,9 +10,9 @@ from ...models import (
     ChatMessage as DBChatMessage,
 )
 from ...dependencies import get_current_user
+from ...limiter import limiter
 
 router = APIRouter(prefix="/chat", tags=["chat"])
-
 
 def generate_chat_response(message: str) -> str:
     """Fallback response generator used when Gemini is unavailable."""
@@ -45,7 +45,9 @@ def generate_chat_response(message: str) -> str:
 
 
 @router.post("", response_model=ChatResponse)
-async def create_chat_reply(
+@limiter.limit("20/minute")
+def create_chat_reply(
+    request: Request,
     payload: ChatRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -145,7 +147,7 @@ async def create_chat_reply(
     try:
         from ...agents.router import AgentRouter
 
-        ai_reply = await AgentRouter.route(
+        ai_reply = AgentRouter.route(
             agent_type=payload.agent_type,
             message=message,
             history=history_data,

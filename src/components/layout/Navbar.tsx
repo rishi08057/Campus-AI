@@ -84,9 +84,50 @@ export function Navbar({
             )}
           </nav>
 
-          <span className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+          <span className="rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700 hidden sm:inline-block">
             {statusLabel}
           </span>
+
+          <div className="md:hidden relative">
+            <button 
+              className="p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
+              onClick={() => {
+                const el = document.getElementById('mobile-menu');
+                if (el) el.classList.toggle('hidden');
+              }}
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div id="mobile-menu" className="absolute right-0 top-full mt-2 hidden w-48 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
+              {authLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  onClick={() => {
+                    const el = document.getElementById('mobile-menu');
+                    if (el) el.classList.add('hidden');
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              {isLoggedIn && (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    const el = document.getElementById('mobile-menu');
+                    if (el) el.classList.add('hidden');
+                  }}
+                  className="block w-full rounded-lg px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50"
+                >
+                  Log Out
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </Container>
     </header>

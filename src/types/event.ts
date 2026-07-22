@@ -4,7 +4,7 @@ export interface Event {
   description: string;
   venue: string;
   category: string;
-  datetime: string;
+  event_datetime: string;
 }
 
 export interface EventRegistration {

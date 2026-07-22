@@ -5,26 +5,16 @@ import type { Recommendation } from "@/types/recommendation";
 import { getRecommendationLabel, getRecommendationBadgeColor } from "@/types/recommendation";
 import { RegistrationModal } from "./RegistrationModal";
 import { saveEvent } from "@/lib/api";
+import { formatDateTime } from "@/utils/formatDate";
 
 export type RecommendationCardProps = {
   recommendation: Recommendation;
   className?: string;
-  isInitialRegistered?: boolean;
-  isInitialSaved?: boolean;
+  isInitialRegistered: boolean;
+  isInitialSaved: boolean;
 };
 
-function formatDateTime(datetime: string) {
-  const parsedDate = new Date(datetime);
 
-  if (Number.isNaN(parsedDate.getTime())) {
-    return datetime;
-  }
-
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(parsedDate);
-}
 
 export function RecommendationCard({
   recommendation,
@@ -83,8 +73,8 @@ export function RecommendationCard({
             <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] ${badgeClasses}`}>
               ⭐ {label}
             </span>
-            <time className="text-sm font-medium text-slate-500" dateTime={event.datetime}>
-              {formatDateTime(event.datetime)}
+            <time className="text-sm font-medium text-slate-500" dateTime={event.event_datetime}>
+              {formatDateTime(event.event_datetime)}
             </time>
           </div>
 

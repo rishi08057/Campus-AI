@@ -75,14 +75,14 @@ export default function ProfilePage() {
             <div className="px-6 pb-8 sm:px-8">
               <div className="relative -mt-12 mb-6">
                 <div className="inline-flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-slate-100 text-3xl font-bold text-slate-400 shadow-sm">
-                  {profile.name.charAt(0)}
+                  {profile.name ? profile.name.charAt(0) : "?"}
                 </div>
               </div>
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <div>
-                    <h1 className="text-3xl font-bold text-slate-950">{profile.name}</h1>
-                    <p className="text-lg text-slate-600">{profile.department}</p>
+                    <h1 className="text-3xl font-bold text-slate-950">{profile.name || "Student"}</h1>
+                    <p className="text-lg text-slate-600">{profile.department || "Undeclared Department"}</p>
                   </div>
                   <div className="flex items-center gap-2 text-slate-600">
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

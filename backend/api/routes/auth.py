@@ -1,9 +1,10 @@
 import os
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from ...limiter import limiter
 
 from ...database import get_db
 from ...dependencies import get_current_user
@@ -17,15 +18,12 @@ from ...services.auth_service import (
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-
 # --------------------------------------------------
 # Cookie Configuration
 # --------------------------------------------------
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
-
 SECURE_COOKIES = ENVIRONMENT == "production"
-
 
 # --------------------------------------------------
 # Authentication Routes
@@ -36,7 +34,9 @@ SECURE_COOKIES = ENVIRONMENT == "production"
     response_model=UserOut,
     status_code=status.HTTP_201_CREATED,
 )
+@limiter.limit("5/minute")
 def signup(
+    request: Request,
     user_in: UserCreate,
     db: Session = Depends(get_db),
 ):
@@ -67,7 +67,9 @@ def signup(
 
 
 @router.post("/login", response_model=Token)
+@limiter.limit("10/minute")
 def login(
+    request: Request,
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
@@ -93,6 +95,7 @@ def login(
     access_token = create_access_token(
         data={
             "sub": user.email,
+            "is_admin": getattr(user, "is_admin", False),
         }
     )
 
@@ -102,7 +105,7 @@ def login(
         value=access_token,
         httponly=True,
         secure=SECURE_COOKIES,
-        samesite="lax",
+        samesite="strict",
         max_age=60 * 60 * 24,
         path="/",
     )
@@ -113,7 +116,7 @@ def login(
         value="true",
         httponly=False,
         secure=SECURE_COOKIES,
-        samesite="lax",
+        samesite="strict",
         max_age=60 * 60 * 24,
         path="/",
     )
@@ -140,5 +143,5 @@ def logout(response: Response):
         "message": "Logged out successfully",
     }
 @router.get("/me", response_model=UserOut)
-async def me(current_user: User = Depends(get_current_user)):
+def me(current_user: User = Depends(get_current_user)):
     return current_user

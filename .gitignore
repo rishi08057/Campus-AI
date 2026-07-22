@@ -1,33 +1,48 @@
-node_modules
-.next
-out
-dist
-coverage
+# ==========================
+# Node / Next.js
+# ==========================
+node_modules/
+.next/
+out/
+dist/
+coverage/
 
+# ==========================
+# Environment Variables
+# ==========================
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
+# Backend environment
+backend/.env
+
+# ==========================
+# Logs
+# ==========================
 *.log
 
+# ==========================
 # Python
+# ==========================
 .venv/
 venv/
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
 
-# Python env files
-backend/.env
-
-# ChromaDB
+# ==========================
+# Chroma Vector Database
+# ==========================
 chroma_db/
 
-# Database files
-*.db
-*.sqlite3
+# ==========================
+# SQLite Database
+# ==========================
+backend/campusai.db
 
+# ==========================
+# Misc
+# ==========================
 structure.txt

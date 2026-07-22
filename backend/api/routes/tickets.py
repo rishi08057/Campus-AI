@@ -91,3 +91,29 @@ def get_ticket_qr(
     buf.seek(0)
     
     return StreamingResponse(buf, media_type="image/png")
+
+from ...dependencies import get_current_admin_user
+from datetime import datetime, timezone
+
+@router.post("/{ticket_id}/check-in")
+def check_in_ticket(
+    ticket_id: str,
+    admin_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Checks in a ticket. Requires admin privileges.
+    """
+    ticket = db.query(Ticket).filter(Ticket.ticket_id == ticket_id).first()
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+        
+    if ticket.is_checked_in:
+        return {"message": "Ticket already checked in", "success": False, "check_in_time": ticket.check_in_time}
+        
+    ticket.is_checked_in = True
+    ticket.check_in_time = datetime.now(timezone.utc)
+    db.commit()
+    
+    return {"message": "Ticket checked in successfully", "success": True, "check_in_time": ticket.check_in_time}

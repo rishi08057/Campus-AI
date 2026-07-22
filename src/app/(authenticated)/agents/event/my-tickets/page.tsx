@@ -75,8 +75,8 @@ export default function MyTicketsPage() {
                     <TicketCard
                       eventName={event.title}
                       venue={event.venue}
-                      datetime={event.datetime}
-                      userName={user.name}
+                      event_datetime={event.event_datetime}
+                      userName={user.name || "Attendee"}
                       qrData={qrData}
                     />
                   </div>

@@ -116,7 +116,7 @@ export function EventResults({
             description={event.description}
             venue={event.venue}
             category={event.category}
-            datetime={event.datetime}
+            event_datetime={event.event_datetime}
             isInitialSaved={savedEventIds.includes(event.id)}
             isInitialRegistered={registeredEventIds.includes(event.id)}
           />

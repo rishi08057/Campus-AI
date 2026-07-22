@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 import uuid
 
 from ...schemas.event import (
@@ -38,7 +39,7 @@ def register_for_event(
     db: Session = Depends(get_db),
 ) -> EventRegistrationResponse:
 
-    # Validate event exists in PostgreSQL
+    # Validate event exists in database
     db_event = (
         db.query(DBEvent)
         .filter(DBEvent.id == registration_in.eventId)
@@ -52,7 +53,7 @@ def register_for_event(
         )
 
     from datetime import datetime, timezone
-    if db_event.datetime and db_event.datetime.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
+    if db_event.event_datetime and db_event.event_datetime.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
         return EventRegistrationResponse(
             message="Cannot register for an event that has already occurred",
             success=False,
@@ -83,7 +84,16 @@ def register_for_event(
     )
 
     db.add(new_reg)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        # Due to race conditions, it's possible this wasn't caught by the pre-check
+        return EventRegistrationResponse(
+            message="User already registered for this event",
+            success=False,
+            registration=registration_in,
+        )
     db.refresh(new_reg)
 
     # Create ticket
@@ -112,7 +122,7 @@ def save_event(
     db: Session = Depends(get_db),
 ) -> EventSaveResponse:
 
-    # Validate event exists in PostgreSQL
+    # Validate event exists in database
     db_event = (
         db.query(DBEvent)
         .filter(DBEvent.id == save_req.eventId)
@@ -164,61 +174,36 @@ def save_event(
 
 @router.get("/saved", response_model=list[Event])
 def get_saved_events(
+    skip: int = 0,
+    limit: int = 100,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ) -> list[Event]:
-
-    saved_records = (
-        db.query(SavedEvent)
-        .filter(
-            SavedEvent.user_id == current_user.id
-        )
-        .all()
-    )
-
-    saved_ids = [
-        record.event_id
-        for record in saved_records
-    ]
-
-    if not saved_ids:
-        return []
-
     events = (
         db.query(DBEvent)
-        .filter(DBEvent.id.in_(saved_ids))
+        .join(SavedEvent, DBEvent.id == SavedEvent.event_id)
+        .filter(SavedEvent.user_id == current_user.id)
+        .order_by(SavedEvent.saved_at.desc())
+        .offset(skip)
+        .limit(limit)
         .all()
     )
-
     return events
 
 
 @router.get("/registered", response_model=list[Event])
 def get_registered_events(
+    skip: int = 0,
+    limit: int = 100,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ) -> list[Event]:
-
-    registered_records = (
-        db.query(Registration)
-        .filter(
-            Registration.user_id == current_user.id
-        )
-        .all()
-    )
-
-    registered_ids = [
-        record.event_id
-        for record in registered_records
-    ]
-
-    if not registered_ids:
-        return []
-
     events = (
         db.query(DBEvent)
-        .filter(DBEvent.id.in_(registered_ids))
+        .join(Registration, DBEvent.id == Registration.event_id)
+        .filter(Registration.user_id == current_user.id)
+        .offset(skip)
+        .limit(limit)
         .all()
     )
-
     return events

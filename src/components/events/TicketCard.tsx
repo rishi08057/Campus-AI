@@ -1,29 +1,22 @@
 "use client";
 
 import { QRCodeSVG } from "qrcode.react";
+import { formatDateTime } from "@/utils/formatDate";
 
 interface TicketCardProps {
   eventName: string;
   venue: string;
-  datetime: string;
+  event_datetime: string;
   userName: string;
   qrData: string;
 }
 
-function formatDateTime(datetime: string) {
-  const parsedDate = new Date(datetime);
-  if (Number.isNaN(parsedDate.getTime())) return datetime;
 
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "full",
-    timeStyle: "short",
-  }).format(parsedDate);
-}
 
 export function TicketCard({
   eventName,
   venue,
-  datetime,
+  event_datetime,
   userName,
   qrData,
 }: TicketCardProps) {
@@ -75,7 +68,7 @@ export function TicketCard({
             Event Date & Time
           </span>
           <p className="text-lg font-bold text-slate-900">
-            {formatDateTime(datetime)}
+            {formatDateTime(event_datetime)}
           </p>
         </div>
 

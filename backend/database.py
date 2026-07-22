@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 import os
 
-# Default to PostgreSQL for development.
+# Default to SQLite for development.
 # Can be overridden by DATABASE_URL in .env
 SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL",

@@ -10,12 +10,7 @@ from ...dependencies import get_current_user
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
-class EventStats(BaseModel):
-    total_events: int
-    total_registrations: int
-    total_attendees: int
-    most_popular_event: Optional[str] = None
-
+from ...schemas.admin import EventStats
 from ...dependencies import get_current_admin_user
 
 @router.get("/stats", response_model=EventStats)
@@ -31,7 +26,7 @@ def get_admin_stats(current_user = Depends(get_current_admin_user), db: Session 
     total_registrations = db.query(Registration).count()
     
     # Total attendees (where is_checked_in == True)
-    total_attendees = db.query(Ticket).filter(Ticket.is_checked_in == True).count()
+    total_attendees = db.query(Ticket).filter(Ticket.is_checked_in.is_(True)).count()
     
     # Most popular event
     # Find the event_id with the most registrations

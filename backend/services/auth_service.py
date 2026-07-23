@@ -3,9 +3,9 @@ from typing import Optional
 from jose import JWTError, jwt
 import bcrypt
 import os
-import logging
+from ..logging_config import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger("auth")
 
 # Configuration
 SECRET_KEY = os.getenv("SECRET_KEY")

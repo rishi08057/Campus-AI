@@ -53,7 +53,7 @@ def register_for_event(
         )
 
     from datetime import datetime, timezone
-    if db_event.event_datetime and db_event.event_datetime.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
+    if db_event.event_datetime and db_event.event_datetime < datetime.now(timezone.utc):
         return EventRegistrationResponse(
             message="Cannot register for an event that has already occurred",
             success=False,

@@ -28,7 +28,7 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
 
     created_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
 
@@ -59,10 +59,10 @@ class Event(Base):
     description = Column(Text)
     venue = Column(String)
     category = Column(String)
-    event_datetime = Column(DateTime)
+    event_datetime = Column(DateTime(timezone=True))
 
     created_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
 
@@ -99,7 +99,7 @@ class Registration(Base):
     )
 
     registered_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
 
@@ -152,10 +152,10 @@ class Ticket(Base):
     qr_code_url = Column(String)
 
     is_checked_in = Column(Boolean, default=False)
-    check_in_time = Column(DateTime, nullable=True)
+    check_in_time = Column(DateTime(timezone=True), nullable=True)
 
     created_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
 
@@ -185,7 +185,7 @@ class SavedEvent(Base):
     )
 
     saved_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
 
@@ -226,7 +226,7 @@ class ChatSession(Base):
     )
 
     created_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
 
@@ -258,7 +258,7 @@ class ChatMessage(Base):
     content = Column(Text)
 
     created_at = Column(
-        DateTime,
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
 

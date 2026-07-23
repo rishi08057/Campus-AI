@@ -1,16 +1,16 @@
 import os
 import time
 import chromadb
-import logging
 from pathlib import Path
 from typing import List, Dict, Any
-from google import genai
 from google.genai import types
+
+from ..logging_config import get_logger
 
 
 class BaseVectorService:
     def __init__(self, collection_name: str, logger_name: str):
-        self.logger = logging.getLogger(logger_name)
+        self.logger = get_logger(logger_name)
 
         # Project root (Campus-AI/)
         PROJECT_ROOT = Path(__file__).resolve().parents[2]

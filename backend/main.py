@@ -1,6 +1,5 @@
 import os
 import json
-import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -18,6 +17,7 @@ try:
 except Exception:
     pass
 
+from .logging_config import setup_logging, get_logger
 from .config import get_cors_origins
 from .api.routes.chat import router as chat_router
 from .api.routes.events import router as events_router
@@ -29,7 +29,7 @@ from .api.routes.auth import router as auth_router
 from .api.routes.tickets import router as tickets_router
 from .api.routes.admin import router as admin_router
 
-from .database import SessionLocal
+from .database import SessionLocal, engine
 from .models import Event
 from .limiter import limiter
 
@@ -37,20 +37,41 @@ from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 
 # --------------------------------------------------
-# Logging
+# Initialise logging (once, before anything else logs)
 # --------------------------------------------------
 
-logging.basicConfig(level=logging.INFO)
-
-logger = logging.getLogger("backend.main")
-
-# Hide noisy HTTP request logs from Gemini
-logging.getLogger("httpx").setLevel(logging.WARNING)
-logging.getLogger("httpcore").setLevel(logging.WARNING)
+logger = setup_logging()
 
 # --------------------------------------------------
 # Lifespan
 # --------------------------------------------------
+
+def _print_banner(status: dict[str, str], port: str) -> None:
+    """Print a concise startup summary."""
+    import sys
+
+    lines = [
+        "",
+        "--------------------------------------------------",
+        "CampusAI Backend Started",
+        "",
+    ]
+    for label, value in status.items():
+        lines.append(f"  {label:<16}{value}")
+    lines.append("")
+    lines.append(f"  Listening on   http://127.0.0.1:{port}")
+    lines.append("--------------------------------------------------")
+    lines.append("")
+    text = "\n".join(lines) + "\n"
+    # Write via buffer to avoid Windows cp1252 encoding errors with emoji/unicode
+    try:
+        sys.stdout.buffer.write(text.encode("utf-8"))
+        sys.stdout.buffer.flush()
+    except Exception:
+        # Ultimate fallback: strip non-ascii
+        sys.stdout.write(text.encode("ascii", errors="replace").decode("ascii"))
+        sys.stdout.flush()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -58,7 +79,16 @@ async def lifespan(app: FastAPI):
         yield
         return
 
+    status: dict[str, str] = {}
     db = SessionLocal()
+
+    try:
+        # ---------- Database ----------
+        engine.connect().close()
+        status["Database"] = "OK  Connected"
+    except Exception as exc:
+        status["Database"] = f"FAIL {exc}"
+        logger.exception("Database connection failed")
 
     try:
         from .agents.config import (
@@ -68,110 +98,80 @@ async def lifespan(app: FastAPI):
             health_vector_service,
         )
 
-        # ---------------- Events ----------------
-
+        # ---------- Events ----------
         events = db.query(Event).all()
-        logger.info(f"Found {len(events)} events")
+        status["Events"] = f"OK  {len(events)} loaded"
 
         if event_vector_service.collection.count() == 0:
             event_vector_service.upsert_events(events)
-            logger.info(f"Indexed {len(events)} events into ChromaDB")
+            status["Chroma"] = "OK  Indexed"
         else:
-            logger.info("Events already indexed. Skipping.")
+            status["Chroma"] = "OK  Indexed"
 
-        # ---------------- Generic JSON Indexer ----------------
+        # ---------- JSON Knowledge Bases ----------
 
-        def index_json_docs(
-            directory: str,
-            files: list[str],
-            v_service,
-            doc_type: str,
-        ):
-            dir_path = os.path.join(
-                os.path.dirname(__file__),
-                "data",
-                directory,
-            )
-
-            all_docs = []
+        def _index_json(directory: str, files: list[str], v_service, label: str):
+            dir_path = os.path.join(os.path.dirname(__file__), "data", directory)
+            all_docs: list = []
 
             if not os.path.exists(dir_path):
-                logger.warning(f"{doc_type} directory not found: {dir_path}")
+                status[label] = "WARN Dir missing"
                 return
 
             for filename in files:
                 filepath = os.path.join(dir_path, filename)
-
                 if os.path.exists(filepath):
                     with open(filepath, "r", encoding="utf-8") as f:
                         all_docs.extend(json.load(f))
 
             if not all_docs:
-                logger.warning(f"No {doc_type} documents found.")
+                status[label] = "WARN No docs"
                 return
 
             if v_service.collection.count() == 0:
                 v_service.index_documents(all_docs)
-                logger.info(
-                    f"Indexed {len(all_docs)} {doc_type} documents into ChromaDB"
-                )
-            else:
-                logger.info(
-                    f"{doc_type.capitalize()} collection already indexed. Skipping."
-                )
 
-        # ---------------- Support ----------------
+            status[label] = "OK  Ready"
 
-        index_json_docs(
+        _index_json(
             "support",
-            [
-                "attendance.json",
-                "exams.json",
-                "faculty.json",
-                "rooms.json",
-            ],
+            ["attendance.json", "exams.json", "faculty.json", "rooms.json"],
             support_vector_service,
-            "support",
+            "Support DB",
         )
 
-        # ---------------- Placement ----------------
-
-        index_json_docs(
+        _index_json(
             "placement",
             [
-                "companies.json",
-                "interviews.json",
-                "resume.json",
-                "coding.json",
-                "aptitude.json",
-                "career.json",
+                "companies.json", "interviews.json", "resume.json",
+                "coding.json", "aptitude.json", "career.json",
             ],
             placement_vector_service,
-            "placement",
+            "Placement DB",
         )
 
-        # ---------------- Health ----------------
-
-        index_json_docs(
+        _index_json(
             "health",
             [
-                "wellness.json",
-                "nutrition.json",
-                "exercise.json",
-                "mental_health.json",
-                "sleep.json",
-                "campus_health.json",
+                "wellness.json", "nutrition.json", "exercise.json",
+                "mental_health.json", "sleep.json", "campus_health.json",
                 "emergency.json",
             ],
             health_vector_service,
-            "health",
+            "Health DB",
         )
 
+        # ---------- Gemini ----------
+        status["Gemini"] = "OK  Ready"
+
     except Exception as e:
-        logger.exception(f"Startup indexing failed: {e}")
+        logger.exception("Startup indexing failed: %s", e)
 
     finally:
         db.close()
+
+    port = os.getenv("PORT", "8000")
+    _print_banner(status, port)
 
     yield
 

@@ -15,8 +15,12 @@ To quickly start the application locally:
 
 ```bash
 # 1. Activate the Python virtual environment and run the backend
-.venv\Scripts\activate # On Windows (or source .venv/bin/activate on macOS/Linux)
-uvicorn backend.main:app --reload
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+# source .venv/bin/activate
+
+python -m uvicorn backend.main:app --reload --reload-dir backend --no-access-log
 
 # 2. Start the Next.js development server
 npm run dev
@@ -37,6 +41,7 @@ For full setup, database seeding, and configurations, refer to the [Installation
 - [Technology Stack](#-technology-stack)
 - [Installation](#-installation)
 - [Environment Variables](#-environment-variables)
+- [Development Workflow](#-development-workflow)
 - [API Overview](#-api-overview)
 - [AI Architecture](#-ai-architecture)
 - [Testing](#-testing)
@@ -142,6 +147,15 @@ When a student submits a query, the `AgentRouter` dispatches the request to the 
 *   **Campus Services**: Operational directories for student clinics and counseling centers.
 *   **Emergency Advisory**: Protocols for urgent health concerns and contact numbers.
 
+### 5. Core System Enhancements
+*   **Multi-agent Architecture**: Specialized AI agents handling distinct domains seamlessly.
+*   **RAG (Retrieval-Augmented Generation)**: Grounded AI responses utilizing a ChromaDB vector database.
+*   **Google Gemini Integration**: Advanced reasoning and context handling via Google Gemini.
+*   **PostgreSQL (Supabase)**: Robust relational data modeling with connection pooling.
+*   **Authentication**: Secure JWT-based session management.
+*   **Automatic Bootstrapping**: Automatic event indexing and vector collection initialization on startup.
+*   **Clean Backend Logging**: Suppresses noisy Uvicorn and SDK logs while surfacing meaningful application events and errors.
+
 ---
 
 ## 🏗️ System Architecture
@@ -175,12 +189,14 @@ Campus-AI/
 │   │   ├── health_agent/     # Student Wellness RAG Agent
 │   │   ├── placement_agent/  # Placements & Career RAG Agent
 │   │   └── support_agent/    # Academic Support RAG Agent
+│   ├── alembic/              # Database Migrations (Alembic)
 │   ├── api/                  # API Routers and Schemas
 │   ├── data/                 # JSON Knowledge Bases for indexing
 │   │   ├── health/           # Wellness & Emergency guidance docs
 │   │   ├── placement/        # Resumes & Recruiter parameters
 │   │   └── support/          # University rules and wayfinding maps
 │   ├── services/             # Core DB interfaces & Gemini AI callers
+│   ├── tests/                # Backend Test Suite
 │   └── main.py               # Backend main server entrypoint
 ├── src/                      # Next.js Frontend Client
 │   ├── app/                  # Pages Router (Dashboard, Agent Chats, Signup)
@@ -197,10 +213,10 @@ Campus-AI/
 ### Frontend
 | Component | Technologies |
 | :--- | :--- |
-| Framework | Next.js 16 (App Router) |
+| Framework | Next.js 16.2 (App Router) |
 | Language | TypeScript |
-| Styling | Tailwind CSS, PostCSS |
-| Libraries | Axios (HTTP client), HTML5-QRCode (Scanner), QRCode.React |
+| Styling | Tailwind CSS v4, PostCSS |
+| Libraries | Axios, HTML5-QRCode, QRCode.React, React 19.1 |
 
 ### Backend
 | Component | Technologies |
@@ -208,21 +224,21 @@ Campus-AI/
 | Framework | FastAPI |
 | Web Server | Uvicorn |
 | ORM | SQLAlchemy |
+| Migrations | Alembic |
 | Security | JSON Web Tokens (JWT), Bcrypt hashing, Python-jose |
 
 ### AI
 | Component | Technologies |
 | :--- | :--- |
 | Models | Google Gemini API (gemini-2.0-flash) |
-| Embeddings | Google Gemini Embedding API (gemini-embedding-2) |
+| Embeddings | Google Gemini Embedding API |
 | Vector Store | ChromaDB |
 | Pattern | Retrieval-Augmented Generation (RAG) |
 
 ### Database
 | Environment | Technologies |
 | :--- | :--- |
-| Development | SQLite |
-| Production | PostgreSQL (Supported) |
+| Development & Production | PostgreSQL (Supabase with Session Pooler) |
 
 ### Authentication
 | Component | Technologies |
@@ -243,37 +259,35 @@ cd CampusAI
 ### 2. Backend Setup
 1. Create a Python virtual environment and activate it:
    ```bash
-   python -m venv .venv
    # Windows:
+   python -m venv .venv
    .venv\Scripts\activate
+   
    # macOS/Linux:
+   python3 -m venv .venv
    source .venv/bin/activate
    ```
 2. Install Python dependencies:
    ```bash
    pip install -r backend/requirements.txt
    ```
-3. Set up the backend environment variables file (`backend/.env`):
-   ```ini
-   GEMINI_API_KEY=your_gemini_api_key_here
-   DATABASE_URL=sqlite:///./campusai.db
-   JWT_SECRET_KEY=your_secure_jwt_secret_key
-   ```
-4. Seed the database with events and initial data:
+3. Create the backend environment variables file (`backend/.env`) from the example:
    ```bash
-   python backend/seed_events.py
+   cp backend/.env.example backend/.env
    ```
-5. ### Updating the Database
+   *Note: Open `backend/.env` and fill in your Supabase connection and Gemini API key.*
 
-After pulling the latest changes:
-
-```bash
-git pull
-alembic upgrade head
-```   
-6. Start the FastAPI backend:
+4. Run database migrations:
    ```bash
-   uvicorn backend.main:app --reload
+   cd backend
+   alembic upgrade head
+   cd ..
+   ```
+   *Note: The project uses PostgreSQL via Supabase. Schema is managed entirely through Alembic migrations. Developers should NEVER manually create database tables.*
+
+5. Start the FastAPI backend:
+   ```bash
+   python -m uvicorn backend.main:app --reload --reload-dir backend --no-access-log
    ```
 
 ### 3. Frontend Setup
@@ -297,14 +311,52 @@ alembic upgrade head
 ### Backend (`backend/.env`)
 | Variable | Description | Example |
 | :--- | :--- | :--- |
+| `DATABASE_URL` | PostgreSQL connection URI string (use Supabase Session Pooler URL). | `postgresql://user:pass@db.projectref.supabase.co:5432/postgres` |
 | `GEMINI_API_KEY` | Developer access token to invoke Google Gemini models. | `AIzaSy...` |
-| `DATABASE_URL` | SQLAlchemy connection URI string. | `sqlite:///./campusai.db` |
-| `JWT_SECRET_KEY` | Secret cryptographic key used to sign and verify user JWT sessions. | `your-secret-key-here` |
+| `SECRET_KEY` | Secret cryptographic key used to sign and verify user JWT sessions. | `your_secure_random_secret_key_here` |
+| `GEMINI_MODEL` | (Optional) Gemini model version to use. | `gemini-2.5-flash` |
+| `CHROMA_PATH` | (Optional) Custom path to store ChromaDB collections. | `./chroma_db` |
+| `FRONTEND_URL` | (Optional) Base URL for frontend CORS policy. | `http://localhost:3000` |
 
 ### Frontend (`.env.local`)
 | Variable | Description | Example |
 | :--- | :--- | :--- |
 | `NEXT_PUBLIC_API_BASE_URL` | Base URL pointing to the FastAPI backend microservice. | `http://localhost:8000` |
+
+---
+
+## 🔄 Development Workflow
+
+When contributing to CampusAI, follow this standard development workflow:
+
+### First-time setup
+1. Clone the repository
+2. Install Python and Node requirements
+3. Create `.env` files for backend and frontend
+4. Run migrations (`alembic upgrade head`)
+5. Start both servers
+
+### After pulling latest changes
+Always ensure your database schema is up-to-date and dependencies are installed:
+```bash
+git pull
+cd backend
+alembic upgrade head
+```
+
+### Creating a migration
+Whenever you modify SQLAlchemy ORM models (`backend/models.py`), generate a new migration script:
+```bash
+cd backend
+alembic revision --autogenerate -m "description_of_your_changes"
+```
+Once the migration script is created, commit it to version control:
+```bash
+git add alembic/versions
+git commit -m "chore: add db migration for [feature]"
+git push
+```
+*Reminder: Never manually alter tables in the database.*
 
 ---
 
@@ -375,20 +427,24 @@ npm run lint
 
 ## 🤝 Contributing
 
-1. Fork the repository.
-2. Create your feature branch:
+We welcome contributions! To ensure a smooth development experience:
+
+1. **Fork the repository** and clone it locally.
+2. **Follow the [Development Workflow](#-development-workflow)** to correctly set up your local environment, install dependencies, and apply database migrations.
+3. **Create your feature branch**:
    ```bash
    git checkout -b feature/AmazingFeature
    ```
-3. Commit your changes:
+4. **Commit your changes**:
+   Make sure to follow conventional commit standards.
    ```bash
-   git commit -m "Add some AmazingFeature"
+   git commit -m "feat: add some AmazingFeature"
    ```
-4. Push your branch:
+5. **Push your branch**:
    ```bash
    git push origin feature/AmazingFeature
    ```
-5. Open a Pull Request.
+6. **Open a Pull Request** with a detailed description of your changes.
 
 ---
 

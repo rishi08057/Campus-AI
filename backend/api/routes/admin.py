@@ -1,17 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
-from typing import Optional
-from pydantic import BaseModel
 
 from ...database import get_db
 from ...models import Event, Registration, Ticket
-from ...dependencies import get_current_user
-
-router = APIRouter(prefix="/admin", tags=["admin"])
-
 from ...schemas.admin import EventStats
 from ...dependencies import get_current_admin_user
+
+router = APIRouter(prefix="/admin", tags=["admin"])
 
 @router.get("/stats", response_model=EventStats)
 def get_admin_stats(current_user = Depends(get_current_admin_user), db: Session = Depends(get_db)) -> EventStats:

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request
-import logging
+
+from ...logging_config import get_logger
 from sqlalchemy.orm import Session
 from ...schemas.chat import ChatRequest, ChatResponse
 
@@ -173,7 +174,7 @@ def create_chat_reply(
         )
 
     except Exception as exc:
-        logging.exception(
+        get_logger("chat").exception(
             "AI service error: %s",
             exc,
         )

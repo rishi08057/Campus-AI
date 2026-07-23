@@ -1,23 +1,17 @@
 import os
-import asyncio
-import logging
-from typing import Optional, List, Any
+from typing import Optional, List
 
-from google import genai
 from google.genai import types
 
-logger = logging.getLogger("backend.ai_service")
+from ..logging_config import get_logger
+from .gemini_client import get_gemini_client
 
-
-def _get_api_key() -> Optional[str]:
-    return os.getenv("GEMINI_API_KEY")
+logger = get_logger("gemini")
 
 
 def _get_model_name() -> str:
     return os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
-
-from .gemini_client import get_gemini_client
 
 def _call_gemini(
     message: str,
@@ -42,7 +36,7 @@ def _call_gemini(
             system_instruction=system_prompt,
         )
 
-    logger.info(f"Sending request to Gemini ({len(contents)} messages)...")
+    logger.info("Gemini request sent (%d messages)", len(contents))
 
     response = client.models.generate_content(
         model=_get_model_name(),
@@ -50,7 +44,7 @@ def _call_gemini(
         config=config,
     )
 
-    logger.info("Received response from Gemini")
+    logger.info("Gemini responded")
 
     return response.text or ""
 

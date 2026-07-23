@@ -9,7 +9,7 @@ def test_event(db_session):
         description="A test event",
         venue="Test Venue",
         category="Workshop",
-        datetime=datetime.now(timezone.utc)
+        event_datetime=datetime.now(timezone.utc)
     )
     db_session.add(event)
     db_session.commit()

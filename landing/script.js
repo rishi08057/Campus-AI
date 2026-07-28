@@ -54,7 +54,7 @@
   const heroWords   = qsa(".word");
   const heroEyebrow = qs(".hero-eyebrow");
   const heroSub     = qs(".hero-sub");
-  const heroCTA     = qs(".hero-content .btn-primary");
+  const heroCTA     = qs(".hero-content .hero-cta-group") || qs(".hero-content .btn-primary");
 
   setTimeout(() => {
     heroEyebrow?.classList.add("visible");

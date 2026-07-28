@@ -132,11 +132,45 @@
 .awwwards-landing .btn:hover { transform: translateY(-2px); }
 .awwwards-landing .btn:active { transform: translateY(0); }
 
+.awwwards-landing .nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .awwwards-landing .btn-nav {
   font-size: var(--fs-small); padding: 10px 24px;
   background: var(--text); color: #fff;
 }
 .awwwards-landing .btn-nav:hover { box-shadow: 0 4px 20px rgba(22,22,26,.18); }
+
+.awwwards-landing .btn-nav-secondary {
+  font-size: var(--fs-small); padding: 9px 20px;
+  background: transparent; color: var(--text);
+  border: 1.5px solid rgba(22,22,26,0.15);
+  border-radius: 100px;
+  font-weight: var(--fw-medium);
+  transition: all .3s var(--ease);
+}
+.awwwards-landing .btn-nav-secondary:hover {
+  border-color: var(--accent-1); color: var(--accent-1);
+  background: rgba(99,102,241,0.06);
+}
+
+.awwwards-landing .hero-cta-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+.awwwards-landing .hero-cta-group.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 .awwwards-landing .btn-primary {
   font-size: var(--fs-body); padding: 16px 36px;
@@ -149,8 +183,48 @@
 .awwwards-landing .btn-primary svg { transition: transform .3s var(--ease); }
 .awwwards-landing .btn-primary:hover svg { transform: translateX(4px); }
 
+.awwwards-landing .btn-secondary {
+  font-size: var(--fs-body); padding: 16px 32px;
+  background: transparent; color: var(--text);
+  border: 1.5px solid rgba(22,22,26,0.15);
+  border-radius: 100px;
+  font-weight: var(--fw-semi);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  transition: all .3s var(--ease);
+}
+.awwwards-landing .btn-secondary:hover {
+  border-color: var(--accent-1); color: var(--accent-1);
+  background: rgba(99,102,241,0.06);
+  box-shadow: 0 4px 20px rgba(99,102,241,0.12);
+  transform: translateY(-2px);
+}
+
 .awwwards-landing .btn-large {
   font-size: 1.125rem; padding: 20px 48px;
+}
+
+.awwwards-landing .footer-cta-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.awwwards-landing .footer-signin-text {
+  font-size: var(--fs-small);
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+
+.awwwards-landing .footer-signin-link {
+  color: var(--accent-1);
+  font-weight: var(--fw-semi);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+.awwwards-landing .footer-signin-link:hover {
+  color: var(--accent-3);
 }
 
 /* ──────────────── Section Utilities ──────────────── */

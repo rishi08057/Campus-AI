@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Link from "next/link";
 import "./awwwards.css"; // Ensure this path matches the location
 
 export default function AwwwardsLanding() {
@@ -64,7 +65,7 @@ export default function AwwwardsLanding() {
     const heroWords = qsa(".word");
     const heroEyebrow = qs(".hero-eyebrow");
     const heroSub = qs(".hero-sub");
-    const heroCTA = qs(".hero-content .btn-primary");
+    const heroCTA = qs(".hero-content .hero-cta-group") || qs(".hero-content .btn-primary");
 
     const heroTimeout = setTimeout(() => {
       heroEyebrow?.classList.add("visible");
@@ -284,13 +285,16 @@ export default function AwwwardsLanding() {
 
       <nav className="nav">
         <div className="nav-inner">
-          <a href="#" className="nav-logo">Campus<span>AI</span></a>
+          <Link href="/" className="nav-logo">Campus<span>AI</span></Link>
           <div className="nav-links">
             <a href="#agents-wrapper">Agents</a>
             <a href="#how">How it works</a>
             <a href="#chat">Demo</a>
           </div>
-          <a href="#footer" className="btn btn-nav">Get Early Access</a>
+          <div className="nav-actions">
+            <Link href="/login" className="btn btn-nav-secondary">Sign In</Link>
+            <Link href="/signup" className="btn btn-nav">Get Early Access</Link>
+          </div>
         </div>
       </nav>
 
@@ -312,10 +316,15 @@ export default function AwwwardsLanding() {
             <span className="word-wrap"><span className="word">life.</span></span>
           </h1>
           <p className="hero-sub">The intelligent platform that routes your questions to specialist AI agents&nbsp;— so&nbsp;you get accurate, grounded answers about every corner of university life.</p>
-          <a href="#footer" className="btn btn-primary">
-            <span>Get Early Access</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
+          <div className="hero-cta-group">
+            <Link href="/signup" className="btn btn-primary">
+              <span>Get Early Access</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </Link>
+            <Link href="/login" className="btn btn-secondary">
+              <span>Sign In</span>
+            </Link>
+          </div>
         </div>
         <div className="scroll-indicator" aria-label="Scroll down">
           <span className="scroll-text">Scroll</span>
@@ -567,10 +576,15 @@ export default function AwwwardsLanding() {
         </div>
         <div className="footer-content">
           <h2 className="footer-headline anim-fade-up">Ready to transform<br/>your campus experience?</h2>
-          <a href="#" className="btn btn-primary btn-large anim-fade-up">
-            <span>Get Started — It's Free</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
+          <div className="footer-cta-group anim-fade-up">
+            <Link href="/signup" className="btn btn-primary btn-large">
+              <span>Get Started — It's Free</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </Link>
+            <p className="footer-signin-text">
+              Already have an account? <Link href="/login" className="footer-signin-link">Sign In</Link>
+            </p>
+          </div>
           <nav className="footer-links anim-fade-up" aria-label="Footer navigation">
             <a href="#">About</a>
             <a href="#">Privacy</a>
